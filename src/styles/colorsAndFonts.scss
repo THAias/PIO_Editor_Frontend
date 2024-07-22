@@ -1,0 +1,36 @@
+:root {
+    --color-menu-background: var(--color-light-blue);
+    --color-tap-background: rgba(240, 240, 240, 1);
+    --color-sidebar-button-active: var(--color-black);
+    --color-button-active: var(--color-blue);
+    --color-add-button: rgb(204, 204, 204);
+    --color-form-background: rgb(210, 210, 210);
+    --color-menu-text-inactive: var(--color-black);
+    --color-menu-text-active: rgb(255, 255, 255);
+    --color-textfield-text: var(--color-black);
+    --color-textfiled-text-inactive: rgb(170, 170, 170);
+    --color-primary: var(--color-blue);
+
+    --color-white: rgb(255, 255, 255);
+    --color-black: rgb(28, 28, 30);
+    --color-grey: rgb(128, 128, 128);
+    --color-light-blue: rgba(7, 78, 232, 0.1);
+    --color-blue: rgb(7, 78, 232);
+    --color-red: #e74c3c;
+    --color-green: #07bc0c;
+    --color-yellow: #f1c40f;
+
+    --font-menu-active: bold 15px Roboto, sans-serif;
+    --font-menu-inactive: normal 15px Roboto, sans-serif;
+    --font-content-title: bold 20px Roboto, sans-serif;
+    --font-content-subtitle: bold 16px Roboto, sans-serif;
+    --font-headline: bold 30px Roboto, sans-serif;
+
+    --large-input-field-width: 265px;
+    --small-input-field-width: 125px;
+    --gap-between-input-fields: 15px;
+    --gap-between-columns: 30px;
+
+    --toastify-toast-min-height: 48px;
+    --toastify-toast-width: auto;
+}

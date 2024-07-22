@@ -1,0 +1,19 @@
+#root {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    font:
+        Normal 15px Roboto,
+        sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.ant-btn {
+    font:
+        Normal 14px Roboto,
+        sans-serif;
+}

@@ -1,0 +1,68 @@
+{
+    "root": true,
+    "extends": [
+        "prettier",
+        "airbnb-typescript",
+        "airbnb/hooks",
+        "plugin:jsdoc/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:jest/recommended",
+        "plugin:prettier/recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:sonarjs/recommended-legacy",
+        "plugin:security/recommended-legacy"
+    ],
+    "plugins": ["jsdoc", "react", "@typescript-eslint", "jest", "import", "sonarjs", "react-hooks"],
+    "settings": {
+        "react": {
+            "version": "detect"
+        },
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            },
+            "typescript": true
+        },
+        "jsdoc": {
+            "mode": "typescript"
+        }
+    },
+    "env": {
+        "browser": true,
+        "es6": true,
+        "jest": true
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "rules": {
+        "linebreak-style": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "import/no-extraneous-dependencies": [
+            "warn",
+            {
+                "devDependencies": false,
+                "optionalDependencies": false,
+                "peerDependencies": false
+            }
+        ],
+        "sonarjs/no-duplicate-string": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "jsdoc/check-tag-names": 1,
+        "jsdoc/check-line-alignment": 1,
+        "jsdoc/require-description": 1,
+        "jsdoc/no-types": 0,
+        "jsdoc/require-property-type": 1,
+        "jsdoc/no-undefined-types": 1,
+        "sonarjs/cognitive-complexity": ["warn", 20]
+    },
+    "ignorePatterns": [".eslintrc", "jest.config.ts"]
+}

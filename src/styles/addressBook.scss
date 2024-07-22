@@ -1,0 +1,41 @@
+.address-book-screen {
+    margin: 1rem auto;
+    min-width: 460px;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0 3rem;
+}
+
+.address-book-form-delete-icon {
+    color: #ff0000;
+    cursor: pointer;
+    font-size: large;
+    margin-right: 4px;
+}
+
+.address-book-add-button {
+    transition: all 0.2s ease-in-out;
+    width: var(--large-input-field-width);
+    background-color: var(--color-blue);
+    margin-left: 1rem;
+    border: 1px solid var(--color-blue);
+
+    span {
+        color: var(--color-white);
+    }
+}
+
+.address-book-add-button:hover {
+    background-color: var(--color-white);
+    border-radius: 2px;
+
+    span {
+        color: var(--color-blue);
+    }
+}
+
+.address-book-heading {
+    font: var(--font-headline);
+    margin: 0.8em 0;
+    padding: 0 16px;
+}

@@ -1,0 +1,9 @@
+.add-button-wrapper {
+    align-self: flex-end;
+    margin-top: 26px;
+
+    .ant-btn {
+        background-color: var(--color-add-button);
+        border: 0;
+    }
+}

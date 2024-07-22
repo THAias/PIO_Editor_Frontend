@@ -1,0 +1,78 @@
+.validation-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .validation-loading-icon {
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+    .validation-loading-text {
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #074ee8;
+    }
+}
+
+.validation-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .validation-error-icon {
+        margin-bottom: 5px;
+        margin-top: 40px;
+        color: #e52800;
+        font-size: 50px;
+    }
+    .validation-error-text {
+        margin-bottom: 40px;
+        font-weight: bold;
+        color: #e52800;
+        text-align: center;
+    }
+}
+
+.validation-error-message {
+    font-size: 10px;
+    margin-bottom: 20px;
+}
+
+.validation-result-header {
+    display: flex;
+    justify-content: space-between;
+
+    .validation-overall-result {
+        .ant-statistic-content-value {
+            margin-left: 20px;
+        }
+    }
+}
+
+.validation-result-info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px;
+    border: thin solid #4d4dff;
+    border-radius: 4px;
+    padding: 5px;
+
+    .validation-result-info-text {
+        color: #7f7f7f;
+        margin-left: 20px;
+    }
+    .validation-result-info-icon {
+        color: #4d4dff;
+        font-size: 30px;
+        margin-left: 10px;
+    }
+}
+
+.validation-result-detail {
+    margin-top: 30px;
+
+    .validation-result-detail-heading {
+        margin-bottom: 5px;
+    }
+}

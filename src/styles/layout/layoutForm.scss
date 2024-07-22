@@ -1,0 +1,134 @@
+//---------- First layer ----------
+.form-title {
+    font: var(--font-content-title);
+    margin-top: 50px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--color-form-background);
+}
+
+.form-title:first-child {
+    margin-top: 16px;
+}
+
+.form-title:before {
+    content: "";
+    display: block;
+    height: 100px;
+    margin: -100px 0 0;
+}
+
+.form-subtitle {
+    font: var(--font-content-subtitle);
+    padding-top: 40px;
+}
+
+//---------- Second layer (optional) ----------
+.form-with-background {
+    background-color: var(--color-form-background);
+    //margin-bottom: calc($gap-between-forms / 2);
+    padding-left: 1em;
+}
+
+//---------- Third layer ----------
+.base-class-form-line {
+    display: flex;
+    min-width: var(--large-input-field-width);
+    //gap: 20px;
+}
+
+.form-line {
+    @extend .base-class-form-line;
+    //margin-bottom: $gap-between-form-lines;
+}
+
+.extended-form-line {
+    @extend .base-class-form-line;
+    //margin-bottom: $gap-between-form-lines;
+    flex-direction: column;
+}
+
+.form-line-increased-top-margin {
+    @extend .base-class-form-line;
+    //margin-top: $gap-between-form-lines;
+}
+
+.form-line-for-remove-button {
+    @extend .base-class-form-line;
+    justify-content: flex-end;
+}
+
+//---------- Fourth layer ----------
+.base-class-two-column-layout {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    flex: 1;
+    column-gap: var(--gap-between-input-fields);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.left {
+    @extend .base-class-two-column-layout;
+    margin-right: var(--gap-between-input-fields);
+}
+
+.right {
+    @extend .base-class-two-column-layout;
+    margin-left: var(--gap-between-input-fields);
+}
+
+.remove-button {
+    &.disabled {
+        color: var(--color-grey);
+        cursor: not-allowed;
+    }
+    padding: 0 8px;
+    color: red;
+}
+
+.info-card {
+    border: 1px solid var(--color-primary);
+    background: var(--color-menu-background);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 26px 2px 2px 2px;
+    box-shadow: 0 0 0 2px var(--color-menu-background);
+
+    .info-card-title {
+        margin-bottom: 8px;
+    }
+
+    .info-card-content {
+        background-color: transparent;
+    }
+}
+
+.wideFieldSpace {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    //column-gap: var(--gap-between-input-fields);
+    //max-width: 960px;
+
+    &.addressBook {
+        max-width: 100%;
+    }
+
+    .ant-space-item {
+        max-width: 480px;
+        min-width: var(--large-input-field-width);
+        width: 100%;
+    }
+}
+
+.smallFieldSpace {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 405px;
+
+    .ant-space-item {
+        max-width: 405px;
+        min-width: var(--small-input-field-width);
+        width: 100%;
+    }
+}

@@ -1,0 +1,370 @@
+$delete-button-width: 35px;
+
+.input-label {
+    display: flex;
+    margin-bottom: 15px;
+    margin-top: 26px;
+    padding: 0;
+}
+
+.ant-tooltip {
+    max-width: calc(
+        var(--large-input-field-width) + var(--gap-between-input-fields) + var(--small-input-field-width)
+    ) !important;
+
+    .ant-tooltip-content {
+        white-space: pre-line;
+    }
+}
+
+.anticon {
+    &.anticon-close-circle {
+        color: var(--color-red);
+    }
+    align-items: start;
+    max-height: 31px;
+
+    svg {
+        margin: auto;
+    }
+}
+
+.ant-select-dropdown {
+    max-width: calc(
+        var(--large-input-field-width) + var(--gap-between-input-fields) + var(--small-input-field-width)
+    ) !important;
+}
+
+.multiple-label {
+    color: var(--color-grey);
+    margin-top: -12px;
+    margin-bottom: 12px;
+}
+
+.base-input {
+    &.vertical > .ant-radio-group {
+        display: block;
+        max-height: 300px;
+        max-width: 300px;
+    }
+
+    &.horizontal > .ant-radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+
+    .removable-input > .ant-input-wrapper > .ant-input {
+        padding-right: 16px;
+    }
+
+    display: flex;
+    @extend %InputSize;
+    @extend %DatePicker;
+    @extend %DeleteButton;
+    @extend %Spacer;
+    @extend %NumericInput;
+    @extend %DropDown;
+
+    .ant-form-item {
+        margin-bottom: 0;
+
+        .ant-form-item-label {
+            margin-top: 20px !important;
+            font-weight: bold;
+            padding: 0;
+            min-width: var(--large-input-field-width);
+
+            .ant-form-item-tooltip {
+                margin-inline-start: 15px;
+            }
+        }
+
+        .ant-form-item-label:before {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    }
+}
+
+.ant-picker-footer {
+    .ant-picker-footer-extra {
+        text-align: right;
+
+        .range-picker-button-button {
+            transition: all 0.2s ease-in-out;
+            width: var(--small-input-field-width);
+            background-color: var(--color-blue);
+            border: 1px solid var(--color-blue);
+            margin: 8px 12px;
+
+            span {
+                color: var(--color-white);
+            }
+        }
+    }
+}
+
+%Spacer {
+    .ant-space-compact > .input-prefix {
+        width: 45%;
+    }
+}
+
+%DatePicker {
+    &.date-picker {
+        flex-direction: row;
+    }
+
+    &:not(.date-picker) {
+        flex-direction: column;
+    }
+
+    .input-date-picker-line {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .input-date-picker {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .unknown-checkbox {
+            margin-left: var(--gap-between-input-fields);
+            display: flex;
+
+            .unknown-checkbox-label {
+                margin-left: 8px;
+            }
+        }
+    }
+}
+
+%DropDown {
+    &.dropdown {
+        flex-direction: row;
+        max-width: calc(
+            var(--large-input-field-width) + var(--gap-between-input-fields) + var(--small-input-field-width)
+        ) !important;
+        min-width: var(--small-input-field-width) !important;
+    }
+
+    &:not(.dropdown) {
+        flex-direction: column;
+    }
+
+    .input-dropdown-line {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--gap-between-input-fields);
+
+        .input-dropdown {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-between-input-fields);
+
+            &.wide {
+                width: var(--large-input-field-width);
+            }
+
+            &.small {
+                width: var(--small-input-field-width);
+            }
+        }
+
+        .unknown-checkbox {
+            display: flex;
+            align-self: center;
+
+            .unknown-checkbox-label {
+                margin-left: 8px;
+            }
+        }
+    }
+
+    .ant-select-clear {
+        color: var(--color-red);
+    }
+
+    .ant-select-clear:hover {
+        color: var(--color-red);
+    }
+}
+
+%DeleteButton {
+    .ant-input-group-wrapper > .ant-input-wrapper > input {
+        border-start-end-radius: 2px;
+        border-end-end-radius: 2px;
+    }
+
+    .ant-input-group-addon {
+        color: var(--color-white);
+        background-color: var(--color-red);
+        height: 16px;
+        width: 16px;
+        border: 0;
+        top: 1px;
+        right: 1px;
+        position: absolute;
+        z-index: 10;
+        padding: 0;
+        font-size: 13px;
+        font-weight: bolder;
+        cursor: pointer;
+        border-radius: 2px;
+        font-family: Roboto, sans-serif;
+
+        &:last-child {
+            border-radius: 2px;
+            border-start-end-radius: 1px;
+        }
+    }
+}
+
+%InputSize {
+    &.wide {
+        width: var(--large-input-field-width);
+    }
+
+    &.small {
+        width: var(--small-input-field-width);
+    }
+
+    &.small-removable {
+        width: calc(var(--small-input-field-width) + $delete-button-width + 2px);
+    }
+
+    &:not(.wide):not(.small):not(.small-removable) {
+        width: auto;
+    }
+}
+
+%NumericInput {
+    // Remove arrows from number input
+    /* Works for Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Works for Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+}
+
+.device-aid {
+    display: flex;
+    flex-direction: row;
+
+    .unknown-checkbox {
+        display: flex;
+        flex-direction: row;
+        margin-left: var(--gap-between-input-fields);
+        align-self: center;
+        margin-top: 4em;
+    }
+    .unknown-checkbox-label {
+        margin-left: 8px;
+    }
+}
+
+.device-given-info {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+
+    .device-given-checkbox-and-label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .device-given-checkbox {
+            margin-right: 10px;
+
+            .ant-form-item {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+.document-upload-form {
+    .upload-button {
+        transition: all 0.2s ease-in-out;
+        margin-top: var(--gap-between-columns);
+        width: var(--large-input-field-width);
+        background-color: var(--color-blue);
+        border: 1px solid var(--color-blue);
+
+        span {
+            color: var(--color-white);
+        }
+    }
+
+    .upload-button:hover {
+        background-color: var(--color-white);
+        border-radius: 2px;
+
+        span {
+            color: var(--color-blue);
+        }
+    }
+}
+
+.document-upload-form-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-between-input-fields);
+    width: 100%;
+
+    .document-upload-form-item {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.document-upload-form-delete {
+    margin-left: auto;
+}
+
+.document-upload-form-delete-icon {
+    color: var(--color-red);
+    font-size: 1.2rem;
+    margin-left: auto;
+}
+
+.document-upload-form-download-icon {
+    color: var(--color-blue);
+    font-size: 1.2rem;
+    margin-left: auto;
+}
+
+.timePeriod,
+.vitalBodyForm {
+    .ant-form-item-explain-error {
+        white-space: nowrap;
+    }
+}
+
+.frequency {
+    display: flex;
+    flex-direction: column;
+    max-width: var(--large-input-field-width);
+    .input-frequency {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        max-width: var(--large-input-field-width);
+        gap: 8px;
+
+        div {
+            flex: 1 1;
+            margin: 0;
+        }
+    }
+}

@@ -1,0 +1,102 @@
+.pio-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    .patient-name {
+        font: var(--font-headline);
+        margin: 0.8em 0;
+        padding: 0 16px;
+
+        .patient-name-content {
+            height: 35px;
+        }
+    }
+}
+
+.header-wrapper {
+    .global-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex: 0 1 auto;
+        border: 1px solid var(--color-black);
+        border-radius: 2px;
+        background-color: var(--color-white);
+        padding-inline: 0;
+
+        .header-title {
+            float: left;
+            margin-left: 16px;
+            font-weight: bolder;
+            font-size: 1.3em;
+        }
+
+        .header-menu-wrapper {
+            min-width: 12em;
+            height: 100%;
+
+            .ant-menu,
+            .ant-menu-dark {
+                height: 100%;
+                background: var(--color-white);
+                color: var(--color-black);
+                margin-right: 16px;
+
+                .ant-menu-item {
+                    color: var(--color-black);
+                }
+
+                .ant-menu-item-active {
+                    color: var(--color-button-active);
+                }
+
+                .ant-menu-item-selected {
+                    color: var(--color-white);
+                    background-color: var(--color-button-active);
+                }
+
+                .ant-menu-item-disabled {
+                    color: var(--color-textfiled-text-inactive) !important;
+                }
+
+                .ant-menu-title-content {
+                    margin: 0;
+                }
+
+                .ant-menu-item-icon {
+                    font-size: 1.3em;
+                }
+            }
+        }
+    }
+}
+.logout-popover {
+    .ant-popover-arrow {
+        margin-top: 17px;
+    }
+    .ant-popover-content {
+        margin-top: 17px;
+        margin-right: 16px;
+    }
+    .ant-popover-inner {
+        padding: 16px;
+    }
+    .logout-content {
+        display: flex;
+        flex-direction: column;
+
+        .logout-content-name,
+        .logout-remaining-time {
+            margin-bottom: 7px;
+        }
+
+        .logout-warning {
+            margin-bottom: 16px;
+        }
+
+        .logout-warning-label {
+            color: var(--color-red);
+        }
+    }
+}

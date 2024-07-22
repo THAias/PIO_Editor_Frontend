@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de-DE">
+<head>
+    <meta charset="utf-8" />
+    <link href="%PUBLIC_URL%/favicon.ico?v=11" rel="icon" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="#000000" name="theme-color" />
+    <meta content="Web based PIO ÜB Editor" name="description" />
+    <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon" />
+    <!--
+manifest.json provides metadata used when your web app is installed on a
+user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+-->
+    <link href="%PUBLIC_URL%/manifest.json" rel="manifest" />
+    <!--
+Notice the use of %PUBLIC_URL% in the tags above.
+It will be replaced with the URL of the `public` folder during the build.
+Only files inside the `public` folder can be referenced from the HTML.
+Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+work correctly both with client-side routing and a non-root public URL.
+Learn how to configure a non-root public URL by running `npm run build`.
+-->
+    <title>PIO-ULB-Editor</title>
+
+    <!-- Loading Spinner Styling -->
+    <style>
+        .loader-container {
+            background-color: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .loader-subtitle {
+            font: bold 18px Roboto, sans-serif;
+            color: #074EE8;
+            text-align: center;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: block;
+            margin: 30px auto;
+            position: relative;
+            color: #074EE8;
+            left: -100px;
+            box-sizing: border-box;
+            animation: shadowRolling 2s linear infinite;
+        }
+
+        @keyframes shadowRolling {
+            0% {
+                box-shadow: 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0);
+            }
+            12% {
+                box-shadow: 100px 0 #074EE8, 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0);
+            }
+            25% {
+                box-shadow: 120px 0 #074EE8, 100px 0 #074EE8, 0 0 rgba(7, 78, 232, 0), 0 0 rgba(7, 78, 232, 0);
+            }
+            36% {
+                box-shadow: 140px 0 #074EE8, 120px 0 #074EE8, 100px 0 #074EE8, 0 0 rgba(7, 78, 232, 0);
+            }
+            50% {
+                box-shadow: 160px 0 #074EE8, 140px 0 #074EE8, 120px 0 #074EE8, 100px 0 #074EE8;
+            }
+            62% {
+                box-shadow: 200px 0 rgba(7, 78, 232, 0), 160px 0 #074EE8, 140px 0 #074EE8, 120px 0 #074EE8;
+            }
+            75% {
+                box-shadow: 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0), 160px 0 #074EE8, 140px 0 #074EE8;
+            }
+            87% {
+                box-shadow: 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0), 160px 0 #074EE8;
+            }
+            100% {
+                box-shadow: 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0), 200px 0 rgba(7, 78, 232, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root">
+    <!-- React will load here -->
+</div>
+<!-- Loading Spinner Div -->
+<div class="loader-container">
+    <div class="loader"></div>
+    <div class="loader-subtitle">PIO-ULB-Editor wird geladen...</div>
+</div>
+</body>
+</html>

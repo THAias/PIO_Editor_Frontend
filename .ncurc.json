@@ -1,0 +1,11 @@
+{
+    "reject": [
+        "typescript",
+        "redux",
+        "@reduxjs/toolkit",
+        "react-redux",
+        "redux-logger",
+        "@types/redux-logger",
+        "eslint"
+    ]
+}

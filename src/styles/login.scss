@@ -1,0 +1,26 @@
+.login-screen {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.login-button {
+    margin-top: 40px;
+}
+
+.logout-button:hover {
+    background-color: var(--color-red) !important;
+    color: var(--color-white) !important;
+}
+
+.logout-button {
+    margin-top: 40px;
+    background-color: var(--color-white) !important;
+    color: var(--color-red) !important;
+    border-color: var(--color-red) !important;
+}

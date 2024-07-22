@@ -1,0 +1,44 @@
+.Toastify__toast-container--top-center {
+    max-width: 50%;
+    border-radius: 2px;
+    .Toastify__close-button > svg {
+        margin-left: 8px;
+    }
+
+    .Toastify__toast-body {
+        div {
+            font:
+                Normal 15px Roboto,
+                sans-serif;
+            color: #121212;
+        }
+        .validation-toast-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #121212;
+
+            .validation-toast-button {
+                margin: auto;
+                Button {
+                    font:
+                        Normal 14px Roboto,
+                        sans-serif;
+                    color: #121212;
+                    border-radius: 2px;
+                    height: 32px;
+                    border: 1px solid #121212;
+
+                    .ant-btn-icon {
+                        color: #07bc0c;
+                    }
+                }
+            }
+            .validation-toast-button:hover {
+                Button {
+                    border: 1px solid #07bc0c;
+                }
+            }
+        }
+    }
+}
