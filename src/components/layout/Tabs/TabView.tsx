@@ -19,6 +19,7 @@ import UUIDService from "../../../services/UUIDService";
 import "../../../styles/layout/sidebarContent.scss";
 import "../../../styles/layout/tabView.scss";
 import toastHandler from "../../ToastHandler";
+import { exportPioPDF } from "../../basic/PDFExport";
 import PatientName from "../HeaderPatientName";
 import { GetTabContent } from "./TabContent";
 import TabMenu from "./TabMenu";
@@ -34,13 +35,12 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
     const { openPio } = useSelector((state: RootState) => state.navigationState);
     const dispatch: AppDispatch = useDispatch();
     const [activeKey, setActiveKey] = React.useState<string | undefined>(undefined);
-    const exportState: boolean = useSelector((state: RootState) => state.navigationState.exportPio);
+    const exportState: string | undefined = useSelector((state: RootState) => state.navigationState.exportPio);
     const toastId = React.useRef<Id | undefined>(undefined);
     const [renderedTabs, setRenderedTabs] = React.useState<IRenderTabs>({
         TabOrganizationOrSocial: false,
         TabCareInformation: false,
     });
-    const [errorBoolean, setErrorBoolean] = React.useState<boolean>(false);
     const [runningExport, setRunningExport] = React.useState<boolean>(false);
 
     const exportErrorMessage = "Da hat etwas nicht geklappt";
@@ -94,6 +94,7 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
                 fileDownload(blob, "pio_export.xml");
                 toastHandler.updateValidationSuccess(toastId, "PIO erfolgreich exportiert");
                 setRunningExport(false);
+                dispatch(navigationActions.exportPioRedux(undefined));
             } else {
                 console.error("Error Code: " + result.errorCode);
                 console.error(result.message);
@@ -105,6 +106,7 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
                 }
                 toastHandler.updateValidationError(toastId, toastMessage);
                 setRunningExport(false);
+                dispatch(navigationActions.exportPioRedux(undefined));
             }
         });
     };
@@ -241,9 +243,50 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
     };
 
     /**
-     * Function to validate the whole Pio and iterate through errors
+     * Asynchronously XML export of the open PIO
+     * @async
      */
-    const validatePio = async (): Promise<void> => {
+    const exportXML = async () => {
+        try {
+            const garbageCollected: boolean = await writeOrgasToPio();
+            if (garbageCollected) exportPioService();
+        } catch (error) {
+            let errorMessage: string = exportErrorMessage;
+            if (error instanceof Error) errorMessage = error.message;
+            toastHandler.updateValidationError(toastId, errorMessage);
+            dispatch(navigationActions.exportPioRedux(undefined));
+            setRunningExport(false);
+        }
+    };
+
+    /**
+     * Asynchronously PDF export of the open PIO
+     * @async
+     */
+    const exportPDF = async () => {
+        try {
+            const garbageCollected: boolean = await writeOrgasToPio();
+            if (garbageCollected) {
+                const sendingOrganization = formInstances.sendingOrganizationForm[0].getFieldsValue().name;
+                await exportPioPDF(sendingOrganization).then(() => {
+                    setRunningExport(false);
+                    dispatch(navigationActions.exportPioRedux(undefined));
+                });
+            }
+        } catch (error) {
+            let errorMessage: string = exportErrorMessage;
+            if (error instanceof Error) errorMessage = error.message;
+            toastHandler.updateValidationError(toastId, errorMessage);
+            dispatch(navigationActions.exportPioRedux(undefined));
+            setRunningExport(false);
+        }
+    };
+
+    /**
+     * Function to validate the whole Pio and iterate through errors
+     * @param {string | undefined} type type of export (xml/pdf)
+     */
+    const validatePio = async (type: string | undefined): Promise<void> => {
         let hasError: boolean = false;
 
         const renderedTabNames: string[] = Object.keys(renderedTabs).filter(
@@ -259,22 +302,15 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
             }
         }
 
-        setErrorBoolean(hasError);
-
         if (!hasError) {
-            dispatch(navigationActions.exportPioRedux(false));
             if (toastId.current) {
                 toastHandler.dismiss(toastId.current);
                 toastId.current = undefined;
             }
-            try {
-                const garbageCollected: boolean = await writeOrgasToPio();
-                if (garbageCollected) exportPioService();
-            } catch (error) {
-                let errorMessage: string = exportErrorMessage;
-                if (error instanceof Error) errorMessage = error.message;
-                toastHandler.updateValidationError(toastId, errorMessage);
-                setRunningExport(false);
+            if (type === "xml") {
+                await exportXML();
+            } else if (type === "pdf") {
+                await exportPDF();
             }
         } else {
             setRunningExport(false);
@@ -283,23 +319,17 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
 
     /**
      * Function to export the PIO as XML
+     * @param {string | undefined} type defines if the export is of type "xml" or "pdf"
      */
-    const exportPioButtonHandler = async (): Promise<void> => {
+    const exportPioButtonHandler = async (type: string | undefined): Promise<void> => {
         setRunningExport(true);
         //Submit all forms
         Object.values(formInstances).forEach((form: [FormInstance]) => {
             if (form) form[0].submit();
         });
-        if (!exportState) {
-            dispatch(navigationActions.exportPioRedux(true));
-        } else {
-            setErrorBoolean(false);
-        }
+        dispatch(navigationActions.exportPioRedux(type));
+        setTimeout(() => validatePio(type), 4000);
     };
-
-    useEffect((): void => {
-        if (exportState || errorBoolean) setTimeout(() => validatePio(), 100);
-    }, [exportState, errorBoolean]);
 
     useEffect((): void => {
         if (!exportState && toastId.current) {
@@ -318,7 +348,7 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
     const items: TabsProps["items"] = Object.entries(tabContent).map(([key, content]: [string, ITab]) => ({
         key: key,
         label: content.tabTitle,
-        forceRender: false,
+        forceRender: true,
         children: <TabWrapper components={content.components} setRenderedTabs={setRenderedTabs} tabName={key} />,
     }));
 
@@ -328,7 +358,7 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
                 <PatientName />
                 <div className={"tab-wrapper"}>
                     <Tabs
-                        className={"tab-view"}
+                        className={`tab-view ${runningExport && "disable-events"}`}
                         onTabClick={(key: string): void => {
                             const baseUrl: string = window.location.origin;
                             if (process.env.REACT_APP_VERSION_ENV == "webVersion") {
@@ -351,5 +381,4 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
         )
     );
 };
-
 export default TabView;

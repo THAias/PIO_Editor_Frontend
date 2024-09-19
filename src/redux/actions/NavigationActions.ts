@@ -83,7 +83,7 @@ const setOpenPioType = (pioType: "new" | "imported" | undefined): IReduxAction =
     };
 };
 
-const exportPioRedux = (exportPioState: boolean): IReduxAction => {
+const exportPioRedux = (exportPioState: string | undefined): IReduxAction => {
     return {
         type: "EXPORT_PIO",
         payload: { exportPio: exportPioState },

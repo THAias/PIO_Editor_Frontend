@@ -32,7 +32,7 @@ const PatientName = (): React.JSX.Element => {
     }, [patientInfo]);
 
     return (
-        <div className={"pio-editor-header"}>
+        <div className={"pio-editor-header"} id={"patient-name"}>
             <div className={"patient-name"}>
                 <div className={"patient-name-content"}>{patientHeader}</div>
             </div>

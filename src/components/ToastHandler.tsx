@@ -3,6 +3,7 @@ import { Button } from "antd";
 import React, { MutableRefObject } from "react";
 import { Id, ToastItem, ToastOptions, TypeOptions, toast } from "react-toastify";
 
+import { reduxStore } from "../redux/store";
 import "../styles/toast.scss";
 
 /**
@@ -34,13 +35,15 @@ class ToastHandler {
      * @static
      */
     private static getValidationDiv(message: string): React.JSX.Element {
+        const state = reduxStore.getState();
+        const exportState = state.navigationState.exportPio;
         return (
             <div className={"validation-toast-content"}>
                 <div className={"validation-toast-text"}>{message}</div>
                 <div className={"validation-toast-button"}>
                     <Button
                         icon={<CheckCircleOutlined />}
-                        onClick={() => document.getElementById("pio-export-button")?.click()}
+                        onClick={() => document.getElementById(`pio-export-button-${exportState}`)?.click()}
                     >
                         Behoben & Weiter
                     </Button>

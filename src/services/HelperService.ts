@@ -105,7 +105,8 @@ export const removeUndefined = (obj: { [key: string]: any }): object => {
  */
 export const getAddressLabel = (addObj?: IAddressObject): string => {
     if (!addObj) return "";
-    const streetStr: string | undefined = addObj.street && `${addObj.street} ${addObj.houseNumber ?? ""}`;
+    const addLocator = addObj.additionalLocator ? `(${addObj.additionalLocator})` : "";
+    const streetStr: string | undefined = addObj.street && `${addObj.street} ${addObj.houseNumber ?? ""} ${addLocator}`;
     const cityStr: string | undefined = addObj.city && `${addObj.city} ${addObj.postalCode ?? ""}`;
     const postOfficeStr: string | undefined = addObj.postOfficeBoxNumber && `Postfach ${addObj.postOfficeBoxNumber}`;
     const addressStr: string = `${streetStr ?? ""}${streetStr && cityStr ? ", " : ""}${cityStr ?? ""}`;

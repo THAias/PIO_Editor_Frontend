@@ -14,6 +14,27 @@
     }
 }
 
+.download-popover {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row: 2;
+    column-gap: 5px;
+    max-width: 600px;
+    border: 1px solid grey;
+
+    & > * {
+        padding: 5px;
+    }
+
+    .download-popover-right-border {
+        border-right: 1px solid grey;
+    }
+
+    .download-popover-header {
+        font-weight: bold;
+    }
+}
+
 .tab-wrapper {
     display: flex;
     overflow: hidden;
@@ -272,4 +293,81 @@
 }
 .no-translation {
     color: var(--color-grey);
+}
+
+@font-face {
+    font-family: "Roboto PDF";
+    src: url("../../assets/Roboto-Regular.ttf") format("truetype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Roboto PDF";
+    src: url("../../assets/Roboto-Bold.ttf") format("truetype");
+    font-weight: bold;
+}
+
+.disable-events {
+    pointer-events: none;
+}
+
+.pdf-override {
+    .ant-select {
+        height: unset !important;
+    }
+    * {
+        font-family: "Roboto PDF", sans-serif !important;
+        line-height: unset !important;
+        white-space: unset !important;
+        overflow: visible !important;
+    }
+    .base-input {
+        width: auto !important;
+    }
+    .frequency {
+        max-width: unset !important;
+    }
+    .patient-name {
+        padding: unset !important;
+    }
+    .signature {
+        min-height: 8cm;
+        border: solid 1px black;
+        color: darkgray;
+        font-size: large;
+        padding-left: 10px;
+    }
+    .ant-select-selector,
+    .ant-picker-outlined,
+    .ant-input-outlined {
+        border: none !important;
+        border-bottom: 1px solid darkgray !important;
+        border-radius: unset !important;
+    }
+    input {
+        color: unset !important;
+        background-color: unset !important;
+    }
+    .ant-tabs-tabpane {
+        display: unset !important;
+    }
+    .ant-input-group-addon {
+        visibility: hidden;
+    }
+    .ant-select-selector {
+        background: unset !important;
+    }
+    .ant-select-arrow {
+        display: none !important;
+    }
+    .ant-select-selection-item {
+        height: auto !important;
+        color: unset !important;
+    }
+    .ant-select-selection-item-remove {
+        visibility: hidden !important;
+    }
+    .ant-select-selection-placeholder {
+        display: none !important;
+    }
 }

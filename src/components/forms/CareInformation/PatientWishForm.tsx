@@ -49,7 +49,6 @@ const PatientWishForm = (props: IFormProps): React.JSX.Element => {
     const onFinish = (value: IFormFinishObject): void => {
         wishSubTree?.deleteSubTreeByPath("");
         if (value.patientWish !== undefined && value.patientWish !== "") {
-            console.log(value);
             wishSubTree?.setValue("valueCodeableConcept.text", StringPIO.parseFromString(value.patientWish as string));
             // Setting general values
             writeStaticFields(

@@ -6,7 +6,7 @@ import {
     InfoCircleOutlined,
     WarningOutlined,
 } from "@ant-design/icons";
-import { Button, Popconfirm, Spin } from "antd";
+import { Button, Popconfirm, Popover, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -25,7 +25,7 @@ import toastHandler from "../../ToastHandler";
  * @returns {React.JSX.Element} React element
  */
 const TabMenu = (
-    exportPio: () => Promise<void>,
+    exportPio: (type: string | undefined) => Promise<void>,
     validatorModalProps: IValidatorModalProps,
     runningExport: boolean
 ): React.JSX.Element => {
@@ -93,7 +93,7 @@ const TabMenu = (
      */
     const deletePio = async (): Promise<void> => {
         dispatch(await navigationActions.closePioRedux());
-        dispatch(navigationActions.exportPioRedux(false));
+        dispatch(navigationActions.exportPioRedux(undefined));
         dispatch(navigationActions.setOpenPioType(undefined));
         toastHandler.dismissAll();
     };
@@ -133,18 +133,51 @@ const TabMenu = (
         <div className={"tab-menu-wrapper"}>
             <div className={"tab-menu-wrapper"}>
                 {reduxStore.getState().navigationState.openPioType === "imported" ? getValidationButton() : undefined}
-                {runningExport ? (
-                    <Button className={"download-button-running-export"} icon={<Spin />} />
-                ) : (
-                    <Button
-                        className={"download-button"}
-                        id={"pio-export-button"}
-                        icon={<DownloadOutlined />}
-                        onClick={exportPio}
-                    >
-                        Export
-                    </Button>
-                )}
+                <Popover
+                    title="In welcher Form möchten Sie den Überleitungsbericht herunterladen?"
+                    trigger="click"
+                    placement="bottomRight"
+                    content={
+                        <div className={`download-popover ${runningExport && "disable-events"}`}>
+                            <div className={"download-popover-right-border"}>
+                                <div className={"download-popover-header"}>XML:</div>
+                                PIO-ULB Export als XML-Datei im FHIR-Standard.
+                            </div>
+                            <div>
+                                <div className={"download-popover-header"}>PDF:</div>
+                                Export des Überleitungsbogens als PDF-Datei, inklusive angehängten Dokumenten.
+                            </div>
+                            <div className={"download-popover-right-border"}>
+                                <Button
+                                    id={"pio-export-button-xml"}
+                                    type="primary"
+                                    icon={<DownloadOutlined />}
+                                    onClick={() => exportPio("xml")}
+                                >
+                                    XML
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    id={"pio-export-button-pdf"}
+                                    type="primary"
+                                    icon={<DownloadOutlined />}
+                                    onClick={() => exportPio("pdf")}
+                                >
+                                    PDF
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                >
+                    {runningExport ? (
+                        <Button className={"download-button-running-export"} icon={<Spin />} />
+                    ) : (
+                        <Button className={"download-button"} id={"pio-export-button"} icon={<DownloadOutlined />}>
+                            Export
+                        </Button>
+                    )}
+                </Popover>
                 <Popconfirm
                     title="Löschen bestätigen"
                     description="Sollen wirklich alle Daten gelöscht werden?"

@@ -45,7 +45,7 @@ export interface INavigationProps {
     openPioType: "new" | "imported" | undefined;
     openSession: boolean;
     collapsedMenu: boolean;
-    exportPio: boolean;
+    exportPio: string | undefined;
 }
 
 /**

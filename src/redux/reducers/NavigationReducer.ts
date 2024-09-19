@@ -6,7 +6,7 @@ const initialNavigationState: INavigationProps = {
     openPioType: undefined,
     openSession: false,
     collapsedMenu: false,
-    exportPio: false,
+    exportPio: undefined,
 };
 
 /**
@@ -29,7 +29,7 @@ export const navigationReducer = (
         case "EXPORT_PIO":
             return { ...state, exportPio: action.payload.exportPio };
         case "CHANGE_SCREEN":
-            return { ...state, screen: action.payload.screen, exportPio: false };
+            return { ...state, screen: action.payload.screen, exportPio: undefined };
         case "OPEN_PIO":
             return { ...state, openPio: true, screen: "2" };
         case "SET_OPEN_PIO_TYPE":

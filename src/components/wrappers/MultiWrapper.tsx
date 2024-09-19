@@ -34,9 +34,11 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
     const items = Form.useWatch(fullPath, form);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const practitioner: boolean = props.componentName === "practitioner";
-    const exportState: boolean = useSelector((state: RootState) => state.navigationState.exportPio);
+    const exportState: string | undefined = useSelector((state: RootState) => state.navigationState.exportPio);
     const [activeKey, setActiveKey] = useState<string | string[] | undefined>(undefined);
+    const [removeBlocker, setRemoveBlocker] = useState<boolean>(false);
 
+    //Unfold all collapse items while exporting a PIO. Necessary for validating all input fields
     useEffect((): void => {
         if (exportState && items) {
             setActiveKey(Array.from({ length: (items as []).length }, (_, index: number) => index.toString()));
@@ -44,6 +46,36 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
             setActiveKey(undefined);
         }
     }, [exportState]);
+
+    /** Increments all active keys with +1 */
+    const incrementActiveKey = (): void => {
+        setActiveKey((prevState: string | string[] | undefined) => {
+            if (!prevState) return [];
+            else if (Array.isArray(prevState)) return prevState.map((key: string) => (Number(key) + 1).toString());
+            else return prevState + 1;
+        });
+    };
+
+    /**
+     * Updates the activeKey state, when removing items from multiWrapper.
+     * @param {number} removedKey Key of the item that should be removed starting with 0
+     */
+    const removeActiveKey = (removedKey: number): void => {
+        setActiveKey((prevState: string | string[] | undefined) => {
+            if (!prevState || !Array.isArray(prevState)) return [];
+            return prevState
+                .map((x: string): string | undefined => {
+                    //Don't change prevState key, if removed key is greater
+                    if (Number(x) < removedKey) return x;
+                    //Delete prevState key, if removed key is equal (undefined will be filtered afterwards)
+                    else if (Number(x) === removedKey) return undefined;
+                    //Decrement prevState key with -1, if removed key is less
+                    else return (Number(x) - 1).toString();
+                })
+                .filter((x: string | undefined) => x !== undefined) as string[];
+        });
+    };
+
     return (
         <>
             <div className={"extended-form-line"}>
@@ -53,7 +85,10 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
                             <>
                                 <div
                                     className={"accordion-new-entry"}
-                                    onClick={() => setModalOpen(true)}
+                                    onClick={() => {
+                                        console.log(activeKey);
+                                        setModalOpen(true);
+                                    }}
                                     style={{ cursor: "pointer" }}
                                 >
                                     <PlusOutlined />
@@ -62,7 +97,11 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
                                 <div className={"accordion-wrapper"}>
                                     <Collapse
                                         bordered={false}
-                                        onChange={setActiveKey}
+                                        onChange={(activeIndex: string | string[]) => {
+                                            setTimeout(() => {
+                                                if (!removeBlocker) setActiveKey(activeIndex);
+                                            }, 50);
+                                        }}
                                         destroyInactivePanel={false}
                                         activeKey={activeKey}
                                         items={
@@ -79,8 +118,13 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
                                                         <DeleteOutlined
                                                             className={"remove-button"}
                                                             onClick={(): void => {
+                                                                setRemoveBlocker(true);
                                                                 remove(name);
-                                                                setTimeout(() => form.submit(), 100);
+                                                                setTimeout(() => {
+                                                                    form.submit();
+                                                                    removeActiveKey(name);
+                                                                    setRemoveBlocker(false);
+                                                                }, 100);
                                                             }}
                                                         />
                                                     ) : (
@@ -115,6 +159,7 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
                     content={<SingleWrapper />}
                     open={modalOpen}
                     onOK={(values: T): void => {
+                        incrementActiveKey();
                         const tempItems = items ?? [];
                         form.setFieldValue(fullPath, [values, ...tempItems]);
                         form.submit();

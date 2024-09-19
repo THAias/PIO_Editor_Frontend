@@ -219,7 +219,6 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
      * @param {IFormFinishObject} value Object which holds the input data. The key is the 'name' of the input field
      */
     const onFinish = (value: IFormFinishObject): void => {
-        console.log(value);
         const findings: IMedicalProblemObject[] = value.MedicalProblemForm as IMedicalProblemObject[];
         onFinishMulti(
             medicalProblemFindingSubTrees,

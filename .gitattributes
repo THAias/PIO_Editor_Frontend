@@ -30,6 +30,7 @@
 # use the following line instead.
 # *.svg    binary
 *.eps      binary
+*.ttf      binary
 
 
 # Force batch scripts to always use CRLF line endings so that if a repo is accessed
