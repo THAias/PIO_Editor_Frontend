@@ -8,8 +8,8 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "npm run prettier:fix && cross-env NODE_ENV=development REACT_APP_VERSION_ENV=webVersion PUBLIC_URL=/ GENERATE_SOURCEMAP=false react-scripts start",
-    "build": "tsc -p tsconfig.json --noEmit && PUBLIC_URL=/editor/ GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
-    "build-localVersion": "tsc -p tsconfig.json --noEmit && PUBLIC_URL=/ GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build": "tsc -p tsconfig.json --noEmit && cross-env PUBLIC_URL=/editor/ GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build-localVersion": "tsc -p tsconfig.json --noEmit && cross-env PUBLIC_URL=/ GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "build-local": "tsc -p tsconfig.json --noEmit && cross-env PUBLIC_URL=/ REACT_APP_VERSION_ENV=webVersion GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "start:localVersion": "npm run prettier:fix && cross-env NODE_ENV=development REACT_APP_VERSION_ENV=localVersion PUBLIC_URL=/ react-scripts start",
     "prettier:fix": "prettier --write \"{src,tests}/**/*.{js,ts,tsx,jsx,css,sass,scss,less,html,md}\"",
