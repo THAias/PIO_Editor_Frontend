@@ -16,7 +16,7 @@ const InputDatePicker = (props: IDatePickerProps): React.JSX.Element => {
     const wide: boolean = props.wide ?? true;
     const dateFormat = "DD.MM.YYYY";
     const form: FormInstance = Form.useFormInstance();
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
     const errorMessage: string | React.ReactElement | undefined = (
         (props.rules && props.rules.find((rule: Rule) => (rule as RuleObject).required)) as RuleObject
     )?.message;

@@ -48,12 +48,12 @@ const ContactPersonForm = (props: IFormProps): React.JSX.Element => {
         // Create sets for faster lookups
         const contactPersonsSet: Set<string> = new Set(
             contactPersons
-                .filter((cp: IContactPersonObject): boolean => cp.id !== undefined)
+                .filter((cp: IContactPersonObject): boolean => cp.id != undefined)
                 .map((cp: IContactPersonObject) => cp.id)
         );
         const reduxContactPersonsSet: Set<string> = new Set(
             contactPersonsReduxState
-                ?.filter((cp: IContactPersonObject): boolean => cp.id !== undefined)
+                ?.filter((cp: IContactPersonObject): boolean => cp.id != undefined)
                 .map((cp: IContactPersonObject) => cp.id)
         );
 

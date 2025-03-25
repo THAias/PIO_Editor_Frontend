@@ -6,6 +6,7 @@ import { Rule, RuleObject } from "antd/es/form";
 import React from "react";
 
 import { IInputDropDownProps } from "../../@types/InputTypes";
+import "../../styles/basic/dropDown.scss";
 
 /**
  * Custom basic component for dropdown
@@ -15,13 +16,30 @@ import { IInputDropDownProps } from "../../@types/InputTypes";
 const InputDropDown = (props: IInputDropDownProps): React.JSX.Element => {
     const [sort, setSort] = React.useState<boolean>(false);
     const allowClear: boolean = props.allowClear ?? true;
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
     const multiple: boolean = props.multiple ?? false;
     const searchable: boolean = props.searchable ?? true;
     const wide: boolean = (props.wide ?? true) || props.unknownCheckboxValue !== undefined;
     const form: FormInstance = Form.useFormInstance();
 
     const dropdownUnknown = Form.useWatch(props.unknownCheckboxName ?? "", form);
+
+    /**
+     * Returns a React Node that represents "No matching option found in dropDown".
+     * @returns {React.JSX.Element} React element
+     */
+    const getValueNotFoundMessage = (): React.JSX.Element => {
+        return (
+            <div className={"not-found"}>
+                <div className={"not-found-heading"}>
+                    <b>Achtung</b>
+                </div>
+                <div className={"not-found-text"}>
+                    Der eingegebene Wert ist ungültig und wird <u>nicht</u> übernommen!
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className={`dropdown base-input ${wide ? "wide" : "small"}`}>
@@ -47,6 +65,7 @@ const InputDropDown = (props: IInputDropDownProps): React.JSX.Element => {
                                 allowClear={allowClear}
                                 onClear={() => form.submit()}
                                 virtual={true}
+                                dropdownStyle={{ scrollbarColor: "green" }}
                                 filterOption={(input: string, option: SelectOption | undefined): boolean => {
                                     return props.searchByValue
                                         ? (option?.label ?? "").toLowerCase().includes(input.toLowerCase()) ||
@@ -62,6 +81,7 @@ const InputDropDown = (props: IInputDropDownProps): React.JSX.Element => {
                                         : undefined
                                 }
                                 optionLabelProp={"label"}
+                                notFoundContent={getValueNotFoundMessage()}
                             ></Select>
                         </Form.Item>
                     </div>

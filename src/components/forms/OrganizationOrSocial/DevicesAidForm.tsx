@@ -1,5 +1,5 @@
 import { IDeviceObject, IResponse, MarkdownPIO, StringPIO, SubTree, UriPIO, UuidPIO } from "@thaias/pio_editor_meta";
-import { SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
+import { Coding, SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
 import { Checkbox, Form, FormListFieldData, Space } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import React, { useEffect } from "react";
@@ -155,9 +155,19 @@ const DevicesAidForm = (props: IFormProps): React.JSX.Element => {
      * @returns {SubTree} The modified SubTree
      */
     const saveDeviceSubTree = (subTree: SubTree, device: IDeviceObject): SubTree => {
+        const unsupportedTypeCoding: Coding = {
+            system: subTree.getSubTreeByPath("type.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("type.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("type.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("type.coding.display").getValueAsString() ?? "",
+        } as Coding;
         subTree.deleteSubTreeByPath("");
-        if (device.deviceType && deviceTypeValueSet.getObjectByCodeSync(device.deviceType))
+        if (device.deviceType && deviceTypeValueSet.getObjectByCodeSync(device.deviceType)) {
             writeCodingToSubTree(subTree, "type.coding", deviceTypeValueSet.getObjectByCodeSync(device.deviceType));
+        } else {
+            //Unsupported Code
+            writeCodingToSubTree(subTree, "type.coding", unsupportedTypeCoding);
+        }
         if (device.deviceResponsibleOrganization && validate(device.deviceResponsibleOrganization)) {
             subTree.setValue(
                 "extension[0].valueReference.reference",
@@ -177,6 +187,12 @@ const DevicesAidForm = (props: IFormProps): React.JSX.Element => {
     };
 
     const saveDeviceAidSubTree = (subTree: SubTree, deviceAid: IDeviceAid): SubTree => {
+        const unsupportedTypeCoding: Coding = {
+            system: subTree.getSubTreeByPath("type.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("type.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("type.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("type.coding.display").getValueAsString() ?? "",
+        } as Coding;
         subTree.deleteSubTreeByPath("");
         writeCodingToSubTree(subTree, "extension[0].valueCodeableConcept.coding", {
             system: "http://snomed.info/sct",
@@ -189,13 +205,15 @@ const DevicesAidForm = (props: IFormProps): React.JSX.Element => {
         subTree.setValue("patient.reference", UuidPIO.parseFromString(patientUUID));
 
         if (deviceAidOptions.find((option: SelectOption) => option.value === deviceAid.deviceAid)) {
-            //Supported code. (unsupported codes -> don't overwrite coding)
             writeCodingToSubTree(subTree, "type.coding", {
                 system: "https://fhir.kbv.de/NamingSystem/KBV_NS_MIO_ULB_Hilfsmittelverzeichnis",
                 version: "1.0.0",
                 code: deviceAid.deviceAid,
                 display: deviceAid.deviceAid,
             });
+        } else {
+            //Unsupported Code
+            writeCodingToSubTree(subTree, "type.coding", unsupportedTypeCoding);
         }
 
         return subTree;

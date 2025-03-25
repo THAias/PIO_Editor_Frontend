@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 
 import App from "./App";
+import "./fonts.scss";
 import { reduxStore } from "./redux/store";
 import "./styles/colorsAndFonts.scss";
 

@@ -4,12 +4,7 @@ import { Form } from "antd";
 import React, { useEffect } from "react";
 
 import { IFormFinishObject, IFormProps } from "../../../@types/FormTypes";
-import {
-    checkCoding,
-    getUnsupportedCoding,
-    writeCodingToSubTree,
-    writeUnsupportedCodingToSubTree,
-} from "../../../services/HelperService";
+import { checkCoding, writeCodingToSubTree } from "../../../services/HelperService";
 import PIOService from "../../../services/PIOService";
 import { writeStaticFields } from "../../../services/SubTreeHelperService";
 import UUIDService from "../../../services/UUIDService";
@@ -153,16 +148,16 @@ const FoodTypeForm = (props: IFormProps): React.JSX.Element => {
         inputNote: string | undefined,
         staticCoding: Coding | undefined
     ): void => {
-        const unsupportedCoding = getUnsupportedCoding(
-            inputValue,
-            subTree.getSubTreeByPath("valueCodeableConcept.coding"),
-            "",
-            propertyName === "foodType" ? foodTypeValueSet : foodAdministrationValueSet
-        );
+        const oldCode: Coding = {
+            system: subTree.getSubTreeByPath("valueCodeableConcept.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("valueCodeableConcept.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("valueCodeableConcept.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("valueCodeableConcept.coding.display").getValueAsString() ?? "",
+        } as Coding;
 
         //Write data to subTree
         subTree?.deleteSubTreeByPath("");
-        const valueExists: boolean = inputValue !== undefined && inputValue !== "";
+        const valueExists: boolean = inputValue != undefined && inputValue !== "";
         const noteExists: boolean = inputNote !== undefined && inputNote !== "";
         if (valueExists) {
             const coding: Coding | undefined =
@@ -171,19 +166,14 @@ const FoodTypeForm = (props: IFormProps): React.JSX.Element => {
                     : foodAdministrationValueSet.getObjectByCodeSync(inputValue);
             if (coding !== undefined) {
                 writeCodingToSubTree(subTree, `valueCodeableConcept.coding`, coding);
+            } else {
+                writeCodingToSubTree(subTree, `valueCodeableConcept.coding`, oldCode);
             }
         }
         if (noteExists) subTree?.setValue("valueCodeableConcept.text", StringPIO.parseFromString(inputNote));
         if (valueExists || noteExists)
             // General values
             writeStaticFields(subTree, patientUUID, staticCoding as Coding, true);
-
-        writeUnsupportedCodingToSubTree(
-            subTree.getSubTreeByPath("valueCodeableConcept"),
-            "coding",
-            "",
-            unsupportedCoding
-        );
     };
 
     /**

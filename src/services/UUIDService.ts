@@ -51,7 +51,7 @@ const deleteUUIDs = (resourceUUIDs: string[]): boolean => {
     });
     //check if uuids were deleted
     return resourceUUIDs.every((resourceUUID: string): boolean => {
-        return UUIDResourceTable[resourceUUID.toString()] === undefined;
+        return UUIDResourceTable[resourceUUID.toString()] == undefined;
     });
 };
 

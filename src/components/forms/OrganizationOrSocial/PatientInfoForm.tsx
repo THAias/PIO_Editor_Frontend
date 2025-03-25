@@ -281,7 +281,7 @@ const PatientInfoForm = (props: IFormProps): React.JSX.Element => {
         const genderCoding: Coding | undefined = genderValueSet.getObjectByCodeSync(
             genderOther ? "other" : (value.gender as string)
         );
-        if (genderCoding && genderCoding.code) genderSubTree?.setValue("", new StringPIO(genderCoding.code));
+        if (genderCoding?.code) genderSubTree?.setValue("", new StringPIO(genderCoding.code));
         else genderSubTree?.deleteSubTreeByPath("");
         if (genderOther) {
             genderSubTree?.setValue("extension[0]", new UriPIO("http://fhir.de/StructureDefinition/gender-amtlich-de"));

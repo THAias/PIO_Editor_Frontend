@@ -530,8 +530,8 @@ const VitalBodyForm = (props: IFormProps): React.JSX.Element => {
         let valueExists: boolean = value[propertyName + "Value"] !== undefined && value[propertyName + "Value"] !== "";
         if (
             propertyName === "bloodPressure" &&
-            (value.bloodPressureValue as IBloodPressureValue).systolic === undefined &&
-            (value.bloodPressureValue as IBloodPressureValue).diastolic === undefined
+            (value.bloodPressureValue as IBloodPressureValue).systolic == undefined &&
+            (value.bloodPressureValue as IBloodPressureValue).diastolic == undefined
         )
             valueExists = false;
         const noteExists: boolean =

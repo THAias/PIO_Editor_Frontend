@@ -14,7 +14,7 @@ const { TextArea } = Input;
  */
 const InputTextArea = (props: IInputTextAreaProps): React.JSX.Element => {
     const wide: boolean = props.wide ?? true;
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
 
     return (
         <div className={`base-input ${wide ? "wide" : "small"}`}>

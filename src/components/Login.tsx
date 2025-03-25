@@ -1,5 +1,5 @@
 import { IResponse, IUserData, capitalize } from "@thaias/pio_editor_meta";
-import { Button, Card, Form } from "antd";
+import { Alert, Button, Card, Form } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -130,6 +130,12 @@ const Login = (props: { autoLogin: boolean }): React.JSX.Element => {
                         name={"lastName"}
                         label={"Nachname"}
                         rules={[{ required: true, message: "Bitte gib deinen Nachnamen ein" }]}
+                    />
+                    <Alert
+                        className={"login-info"}
+                        message="Der Name wird automatisch als Autor im PIO-ULB hinterlegt und kann nicht mehr geändert werden!"
+                        type="info"
+                        showIcon
                     />
                     <FormItem className={"button-container"}>
                         {isLoggedIn ? (

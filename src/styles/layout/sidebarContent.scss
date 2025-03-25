@@ -20,6 +20,14 @@
     }
 }
 
+.tab-sidebar-trigger {
+    background: var(--color-light-blue) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
 .ant-layout-sider {
     background: var(--color-light-blue) !important;
 }

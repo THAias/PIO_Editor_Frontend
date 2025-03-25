@@ -7,7 +7,7 @@ import {
     SubTree,
     UuidPIO,
 } from "@thaias/pio_editor_meta";
-import { SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
+import { Coding, SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
 import { Form } from "antd";
 import { Dayjs } from "dayjs";
 import React, { useEffect } from "react";
@@ -89,7 +89,7 @@ const ConsentStatementForm = (props: IFormProps): React.JSX.Element => {
                     );
                     return {
                         id: id,
-                        policyRule: policyRule || "",
+                        policyRule: policyRule ?? "",
                         comment: comment,
                         dateTime: dateTime,
                         proxy: proxyObj?.id,
@@ -111,10 +111,18 @@ const ConsentStatementForm = (props: IFormProps): React.JSX.Element => {
      */
     const updateSubTree = (subTree: SubTree, finding: IConsentStatement): SubTree => {
         const { policyRule, dateTime, comment, proxy }: IConsentStatement = finding;
+        const oldCode: Coding = {
+            system: subTree.getSubTreeByPath("policyRule.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("policyRule.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("policyRule.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("policyRule.coding.display").getValueAsString() ?? "",
+        } as Coding;
         subTree.deleteSubTreeByPath("");
 
         if (policyRule && policyRuleValueSet.getObjectByCodeSync(policyRule))
             writeCodingToSubTree(subTree, "policyRule.coding", policyRuleValueSet.getObjectByCodeSync(policyRule));
+        else if (policyRule && !policyRuleValueSet.getObjectByCodeSync(policyRule))
+            writeCodingToSubTree(subTree, "policyRule.coding", oldCode);
         setValueIfExists("sourceReference.display", StringPIO.parseFromString(comment), subTree);
         setValueIfExists("dateTime", DateTimePIO.parseFromString(dateTime && convertDateJsToString(dateTime)), subTree);
         if (proxy) {

@@ -70,7 +70,7 @@ const ImplantForm = (props: IFormProps): React.JSX.Element => {
                 medicalDeviceValueSet.getObjectByCodeSync(implant.implantType)
             );
         setValueIfExists("note.text", MarkdownPIO.parseFromString(implant.comment), subTree);
-        if (implant.implantType || implant.comment) {
+        if (implant.implantType ?? implant.comment) {
             writeCodingToSubTree(subTree, "extension[0].valueCodeableConcept.coding", {
                 system: "http://snomed.info/sct",
                 version: "http://snomed.info/sct/900000000000207008/version/20220331",

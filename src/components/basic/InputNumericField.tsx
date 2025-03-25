@@ -12,7 +12,7 @@ import { IInputNumericFieldProps } from "../../@types/InputTypes";
  */
 const InputNumericField = (props: IInputNumericFieldProps): React.JSX.Element => {
     const wide: boolean = props.wide ?? true;
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
 
     return (
         <div className={`base-input ${wide ? "wide" : "small"}`}>

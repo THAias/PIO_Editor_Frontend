@@ -12,7 +12,7 @@ import { IInputTextFieldProps } from "../../@types/InputTypes";
  */
 const InputTextField = (props: IInputTextFieldProps): React.JSX.Element => {
     const wide: boolean = props.wide ?? true;
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
 
     // Handler function for removing a text field
     const handleRemove = (): void => {

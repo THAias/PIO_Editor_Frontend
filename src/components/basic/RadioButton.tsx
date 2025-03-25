@@ -12,7 +12,7 @@ import { IRadioButtonProps } from "../../@types/InputTypes";
  * @returns {React.JSX.Element} React element
  */
 const RadioButton = (props: IRadioButtonProps): React.JSX.Element => {
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
     const [selected, setSelected] = useState<string | null>(props.required ? (props.value ?? null) : null);
     const form: FormInstance = Form.useFormInstance();
     // Handler function for selection change

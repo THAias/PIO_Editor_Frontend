@@ -73,15 +73,14 @@ const NameWrapper = (props: INameFormProps): React.JSX.Element => {
         if (item) {
             Object.entries(item).forEach(([key, value]): void => {
                 if (value != null && nameOptions.hasOwnProperty(key)) {
-                    newAddedNameOptions[key.toString()] = Object.assign({}, nameOptions[key.toString()]);
-                    if (key === "geburtsname" && (value as IMaidenNameObject).familyName !== undefined) {
+                    newAddedNameOptions[key.toString()] = { ...nameOptions[key.toString()] };
+                    if (key === "geburtsname" && (value as IMaidenNameObject).familyName != undefined) {
                         setMaidenNameVisible(true);
                         Object.entries(value as IMaidenNameObject).forEach(([maidenKey, maidenValue]): void => {
                             if (maidenValue != null && maidenKey !== "familyName") {
-                                newAddedMaidenNameOptions[maidenKey.toString()] = Object.assign(
-                                    {},
-                                    maidenNameOptions[maidenKey.toString()]
-                                );
+                                newAddedMaidenNameOptions[maidenKey.toString()] = {
+                                    ...maidenNameOptions[maidenKey.toString()],
+                                };
                             } else {
                                 setMaidenNameVisible(true);
                             }
@@ -116,11 +115,11 @@ const NameWrapper = (props: INameFormProps): React.JSX.Element => {
             if (maidenOption && maidenNameOptions[label.toString()]) {
                 setAddedMaidenNameOptions({
                     ...addedMaidenNameOptions,
-                    [label]: Object.assign({}, maidenNameOptions[label.toString()]),
+                    [label]: { ...maidenNameOptions[label.toString()] },
                 });
                 delete maidenNameOptions[label.toString()];
             } else if (!maidenOption && nameOptions[label.toString()]) {
-                setAddedNameOptions({ ...addedNameOptions, [label]: Object.assign({}, nameOptions[label.toString()]) });
+                setAddedNameOptions({ ...addedNameOptions, [label]: { ...nameOptions[label.toString()] } });
                 if (label === "geburtsname") {
                     setMaidenNameVisible(true);
                 }

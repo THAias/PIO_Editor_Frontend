@@ -180,7 +180,7 @@ const NursingMeasuresForm = (props: IFormProps): React.JSX.Element => {
      */
     // eslint-disable-next-line sonarjs/cognitive-complexity
     const updateSubTree = (subTree: SubTree, finding: INursingMeasures): SubTree => {
-        if (finding.measure === undefined) return subTree;
+        if (finding.measure == undefined) return subTree;
         const {
             measure,
             timePeriod,
@@ -193,10 +193,37 @@ const NursingMeasuresForm = (props: IFormProps): React.JSX.Element => {
             comment,
             performer,
         }: INursingMeasures = finding;
+        //Get old codes from extensions
+        const oldMeasureCode: Coding = {
+            system: subTree.getSubTreeByPath("code.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("code.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("code.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("code.coding.display").getValueAsString() ?? "",
+        } as Coding;
+        const timingSubTree: SubTree | undefined = subTree.children
+            .find((child: SubTree) => {
+                return child.data?._value === "https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_ULB_Timetable";
+            })
+            ?.children.find((child: SubTree) => {
+                return child.data?._value === "angabeStrukturiert";
+            })
+            ?.children.find((child: SubTree) => {
+                return child.data?._value === "zeitpunkt";
+            });
+        const oldTimingCode: Coding = {
+            system: timingSubTree?.getSubTreeByPath("valueTiming.code.coding.system").getValueAsString() ?? "",
+            version: timingSubTree?.getSubTreeByPath("valueTiming.code.coding.version").getValueAsString() ?? "",
+            code: timingSubTree?.getSubTreeByPath("valueTiming.code.coding.code").getValueAsString() ?? "",
+            display: timingSubTree?.getSubTreeByPath("valueTiming.code.coding.display").getValueAsString() ?? "",
+        } as Coding;
         subTree.deleteSubTreeByPath("");
 
         // Resource values
-        const measureCoding: Coding | undefined = nursingMeasuresValueSet.getObjectByCodeSync(measure);
+        let measureCoding: Coding | undefined = undefined;
+        if (measure && nursingMeasuresValueSet.getObjectByCodeSync(measure))
+            measureCoding = nursingMeasuresValueSet.getObjectByCodeSync(measure);
+        else if (measure && !nursingMeasuresValueSet.getObjectByCodeSync(measure)) measureCoding = oldMeasureCode;
+
         setValueIfExists("note.text", MarkdownPIO.parseFromString(comment), subTree);
         if (performer && validate(performer))
             setValueIfExists("performer.actor.reference", UuidPIO.parseFromString(performer), subTree);
@@ -211,11 +238,13 @@ const NursingMeasuresForm = (props: IFormProps): React.JSX.Element => {
             DateTimePIO.parseFromString(end && convertDateJsToString(end)),
             subTree
         );
+
         // Extension values
         let extCounter: number = 0;
         const timeExt: boolean = timeInstance !== undefined;
         const freqExt: boolean = frequency !== undefined && period !== undefined && periodUnit !== undefined;
         const durationExt: boolean = durationValue !== undefined && durationUnit !== undefined;
+
         if (timeExt || freqExt || durationExt) {
             subTree.setValue("extension[0]", new UriPIO(extensionUrls.nursingMeasures));
             subTree.setValue("extension[0].extension[0]", new UriPIO("codeSnomed"));
@@ -230,11 +259,13 @@ const NursingMeasuresForm = (props: IFormProps): React.JSX.Element => {
         if (timeExt) {
             const path: string = `extension[0].extension[1].extension[${extCounter}]`;
             subTree.setValue(path, new UriPIO("zeitpunkt"));
-            writeCodingToSubTree(
-                subTree,
-                path + ".valueTiming.code.coding",
-                timeInstanceValueSet.getObjectByCodeSync(timeInstance as string)
-            );
+            if (timeInstanceValueSet.getObjectByCodeSync(timeInstance as string))
+                writeCodingToSubTree(
+                    subTree,
+                    path + ".valueTiming.code.coding",
+                    timeInstanceValueSet.getObjectByCodeSync(timeInstance as string)
+                );
+            else writeCodingToSubTree(subTree, path + ".valueTiming.code.coding", oldTimingCode);
             extCounter++;
         }
         if (freqExt) {

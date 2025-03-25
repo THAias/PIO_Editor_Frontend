@@ -2,12 +2,11 @@ import { CaretLeftOutlined, CaretRightOutlined } from "@ant-design/icons";
 import { Anchor, Empty, Layout } from "antd";
 import React, { RefObject, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AnyAction } from "redux";
 
 import { IComponents, IRenderTabs, ITabContentProps } from "../../../@types/FormTypes";
 import { AppDispatch, RootState } from "../../../@types/ReduxTypes";
 import navigationActions from "../../../redux/actions/NavigationActions";
-import { getItems, zeroWidthTriggerStyle } from "./TabHelper";
+import { getItems } from "./TabHelper";
 import TitleFormWrapper from "./TitleFormWrapper";
 
 const { Content, Sider } = Layout;
@@ -31,7 +30,12 @@ const TabWrapper = (props: ITabContentProps): React.JSX.Element => {
      * @returns {React.JSX.Element} React element
      */
     const sideTrigger: React.JSX.Element = (
-        <div className={"tab-sidebar-trigger"}>{collapsed ? <CaretRightOutlined /> : <CaretLeftOutlined />}</div>
+        <div
+            className={"tab-sidebar-trigger"}
+            onClick={() => dispatch(navigationActions.collapseMenuRedux(!collapsed))}
+        >
+            {collapsed ? <CaretRightOutlined /> : <CaretLeftOutlined />}
+        </div>
     );
 
     /**
@@ -47,17 +51,7 @@ const TabWrapper = (props: ITabContentProps): React.JSX.Element => {
 
     return Object.keys(props.components).length !== 0 && props.components.constructor === Object ? (
         <Layout>
-            <Sider
-                id={"pio-sidebar"}
-                collapsible
-                collapsedWidth={0}
-                width={285}
-                theme={"light"}
-                collapsed={collapsed}
-                onCollapse={(value: boolean): AnyAction => dispatch(navigationActions.collapseMenuRedux(value))}
-                zeroWidthTriggerStyle={zeroWidthTriggerStyle}
-                trigger={sideTrigger}
-            >
+            <Sider id={"pio-sidebar"} collapsedWidth={0} width={285} theme={"light"} collapsed={collapsed}>
                 <div className={"sidebar-wrapper"} id={"sidebar-wrapper"}>
                     <Anchor
                         offsetTop={0}
@@ -71,6 +65,7 @@ const TabWrapper = (props: ITabContentProps): React.JSX.Element => {
                     />
                 </div>
             </Sider>
+            {sideTrigger}
             <Layout>
                 <Content className={"main-content-wrapper"} id={"pio-main-content-wrapper"} ref={mainContentRef}>
                     <div className={"main-content"}>

@@ -189,7 +189,7 @@ const UploadDocumentsForm = (props: IFormProps): React.JSX.Element => {
             reader.onload = (): void => {
                 const base64String: string | ArrayBuffer | null = reader.result;
                 if (base64String) {
-                    (file as UploadFile).url = base64String.toString();
+                    (file as UploadFile).url = typeof base64String === "string" ? base64String : String(base64String);
                 }
                 resolve("done");
             };
@@ -401,6 +401,14 @@ const UploadDocumentsForm = (props: IFormProps): React.JSX.Element => {
     return (
         <>
             <div onBlur={form.submit}>
+                <div className={"info-card"}>
+                    <div className={"info-card-content"}>
+                        <div className={"centered"}>
+                            Hier können relevante Dokumente hochgeladen werden, unter anderem <b>Arztbriefe</b> oder{" "}
+                            <b>Medikationspläne</b>!
+                        </div>
+                    </div>
+                </div>
                 <Form layout={"vertical"} name={"UploadReferenzForm"} onFinish={onFinish} form={form}>
                     <Form.Item name={"documentUploadFile"}>
                         <div>
@@ -409,7 +417,11 @@ const UploadDocumentsForm = (props: IFormProps): React.JSX.Element => {
                                 className={"document-upload-form"}
                                 multiple
                                 supportServerRender={false}
-                                customRequest={uploadDocument}
+                                customRequest={(options) => {
+                                    uploadDocument(options).catch((error) => {
+                                        console.error("An error occurred uploading a document: ", error);
+                                    });
+                                }}
                                 showUploadList={false}
                                 onChange={updateDocuments}
                                 beforeUpload={beforeUpload}

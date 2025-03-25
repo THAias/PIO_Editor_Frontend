@@ -117,9 +117,12 @@ const IsolationForm = (props: IFormProps): React.JSX.Element => {
                     switch (subTree.lastPathElement) {
                         case isolationNecessityPath:
                             setIsolationNecessitySubTree(subTree);
+                            const isolationNecessityValue = subTree
+                                .getSubTreeByPath("valueCodeableConcept.coding.code")
+                                .getValueAsString();
                             form.setFieldValue(
                                 "isolation",
-                                subTree.getSubTreeByPath("valueCodeableConcept.coding.code").getValueAsString()
+                                isolationNecessityValue ?? "129125009:363589002=40174006,408730004=410537005"
                             );
                             break;
                         case isolationProcedurePath:
@@ -241,7 +244,7 @@ const IsolationForm = (props: IFormProps): React.JSX.Element => {
                             name={"isolation"}
                             label={"Angaben zur Isolation"}
                             options={isolationOptions}
-                            unknownOption={true}
+                            unknownOption={false}
                             helpText={helperTextIsolationForm.isolation}
                         />
                     </div>

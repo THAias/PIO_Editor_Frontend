@@ -248,7 +248,7 @@ const UrinaryFecalForm = (props: IFormProps): React.JSX.Element => {
      */
     const saveLastBowelMovementSubTree = (value: IFormFinishObject): void => {
         lastBowelMovementSubTree?.deleteSubTreeByPath("");
-        if (value.lastBowelMovement !== undefined && value.lastBowelMovement !== null) {
+        if (value.lastBowelMovement != null) {
             //Input value
             lastBowelMovementSubTree?.setValue(
                 "valueDateTime",

@@ -211,9 +211,16 @@ const Home = (props: { validatorModalProps: IValidatorModalProps }): React.JSX.E
                                 {
                                     <Button
                                         type={"primary"}
-                                        onClick={async (): Promise<IReduxAction> =>
-                                            dispatch(await navigationActions.openPioAndInitRedux())
-                                        }
+                                        onClick={() => {
+                                            navigationActions
+                                                .openPioAndInitRedux()
+                                                .then((result: IReduxAction) => {
+                                                    dispatch(result);
+                                                })
+                                                .catch((error) => {
+                                                    console.error("Error opening pio:", error);
+                                                });
+                                        }}
                                     >
                                         Zurück zum PIO-ULB
                                     </Button>
@@ -301,7 +308,11 @@ const Home = (props: { validatorModalProps: IValidatorModalProps }): React.JSX.E
                                 <Upload
                                     maxCount={1}
                                     accept={".txt, .xml"}
-                                    customRequest={extractXmlString}
+                                    customRequest={(options) => {
+                                        extractXmlString(options).catch((error) => {
+                                            console.error("An error occurred extracting xml string: ", error);
+                                        });
+                                    }}
                                     onChange={(info: UploadChangeParam) => {
                                         if (info.file.status === "done") {
                                             setFileUploaded(true);

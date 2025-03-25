@@ -9,7 +9,7 @@ import {
     UriPIO,
     UuidPIO,
 } from "@thaias/pio_editor_meta";
-import { SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
+import { Coding, SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
 import { Form } from "antd";
 import { Dayjs } from "dayjs";
 import React, { useEffect } from "react";
@@ -20,6 +20,7 @@ import {
     checkCoding,
     convertDateJsToString,
     convertStringToDayJs,
+    getSupportedAndUnsupportedCodes,
     writeCodingToSubTree,
 } from "../../../services/HelperService";
 import PIOService from "../../../services/PIOService";
@@ -124,7 +125,7 @@ const AllergyForm = (props: IFormProps): React.JSX.Element => {
                         allergyType,
                         symptoms,
                         note,
-                        furtherInfo: furtherInfo || "",
+                        furtherInfo: furtherInfo ?? "",
                         timePeriod: {
                             start,
                             end,
@@ -146,6 +147,13 @@ const AllergyForm = (props: IFormProps): React.JSX.Element => {
      * @returns {SubTree} The modified SubTree
      */
     const updateSubTree = (subTree: SubTree, finding: IAllergyObject): SubTree => {
+        const oldAllergyCode: Coding = {
+            system: subTree.getSubTreeByPath("code.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("code.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("code.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("code.coding.display").getValueAsString() ?? "",
+        } as Coding;
+
         subTree.deleteSubTreeByPath("");
         const {
             allergyCategory,
@@ -156,7 +164,8 @@ const AllergyForm = (props: IFormProps): React.JSX.Element => {
             symptoms,
             timePeriod,
         }: IAllergyObject = finding;
-        setValueIfExists("category", CodePIO.parseFromString(allergyCategory), subTree);
+        const categoryCode: string = getSupportedAndUnsupportedCodes(allergyCategory, "code") as string;
+        setValueIfExists("category", CodePIO.parseFromString(categoryCode), subTree);
         setValueIfExists("criticality", CodePIO.parseFromString(allergyCriticality), subTree);
         setValueIfExists("type", CodePIO.parseFromString(allergyType), subTree);
         setValueIfExists("reaction.manifestation.text", StringPIO.parseFromString(symptoms), subTree);
@@ -165,6 +174,8 @@ const AllergyForm = (props: IFormProps): React.JSX.Element => {
 
         if (furtherInfo && allergyFurtherInfoValueSet.getObjectByCodeSync(furtherInfo))
             writeCodingToSubTree(subTree, "code.coding", allergyFurtherInfoValueSet.getObjectByCodeSync(furtherInfo));
+        else if (furtherInfo && !allergyFurtherInfoValueSet.getObjectByCodeSync(furtherInfo))
+            writeCodingToSubTree(subTree, "code.coding", oldAllergyCode);
 
         const setEndDateExtensionValue = (index: number, dateValue: Dayjs | undefined) => {
             subTree.setValue(`extension[${index}]`, new UriPIO(extensionUrls.allergyAbatement));
@@ -191,9 +202,7 @@ const AllergyForm = (props: IFormProps): React.JSX.Element => {
                     (extension: SubTree) => extension.data?.toString() === extensionUrls.allergyAbatement
                 );
                 setEndDateExtensionValue(abatementSubTreeIndex ?? extensions.length, end);
-            } else {
-                if (end) setEndDateExtensionValue(0, end);
-            }
+            } else if (end) setEndDateExtensionValue(0, end);
         }
         return subTree;
     };

@@ -12,6 +12,7 @@ import { AppDispatch, RootState } from "../../../@types/ReduxTypes";
 import navigationActions from "../../../redux/actions/NavigationActions";
 import { initializeReduxSubTrees } from "../../../redux/initializeRedux";
 import AddressBookService from "../../../services/AddressBookService";
+import { exportPioPDF } from "../../../services/PDFService";
 import PIOService from "../../../services/PIOService";
 import { getAllReferencedOrganUUIDs } from "../../../services/ReferenceService";
 import { convertToOrganizationSubTrees } from "../../../services/SubTreeConverterService";
@@ -19,7 +20,6 @@ import UUIDService from "../../../services/UUIDService";
 import "../../../styles/layout/sidebarContent.scss";
 import "../../../styles/layout/tabView.scss";
 import toastHandler from "../../ToastHandler";
-import { exportPioPDF } from "../../basic/PDFExport";
 import PatientName from "../HeaderPatientName";
 import { GetTabContent } from "./TabContent";
 import TabMenu from "./TabMenu";
@@ -86,15 +86,13 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
     /**
      * Function to export the PIO as XML if no validation error occurs
      */
-    const exportPioService = (): void => {
-        PIOService.exportPIO().then((result: IResponse): void => {
+    const exportPioService = async (): Promise<void> => {
+        await PIOService.exportPIO().then((result: IResponse): void => {
             if (result.success) {
                 const xmlString: string = result.data?.xmlString as string;
                 const blob: Blob = new Blob([xmlString], { type: "text/plain" });
                 fileDownload(blob, "pio_export.xml");
                 toastHandler.updateValidationSuccess(toastId, "PIO erfolgreich exportiert");
-                setRunningExport(false);
-                dispatch(navigationActions.exportPioRedux(undefined));
             } else {
                 console.error("Error Code: " + result.errorCode);
                 console.error(result.message);
@@ -105,8 +103,6 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
                     toastMessage = exportErrorMessage;
                 }
                 toastHandler.updateValidationError(toastId, toastMessage);
-                setRunningExport(false);
-                dispatch(navigationActions.exportPioRedux(undefined));
             }
         });
     };
@@ -247,16 +243,8 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
      * @async
      */
     const exportXML = async () => {
-        try {
-            const garbageCollected: boolean = await writeOrgasToPio();
-            if (garbageCollected) exportPioService();
-        } catch (error) {
-            let errorMessage: string = exportErrorMessage;
-            if (error instanceof Error) errorMessage = error.message;
-            toastHandler.updateValidationError(toastId, errorMessage);
-            dispatch(navigationActions.exportPioRedux(undefined));
-            setRunningExport(false);
-        }
+        const garbageCollected: boolean = await writeOrgasToPio();
+        if (garbageCollected) await exportPioService();
     };
 
     /**
@@ -264,21 +252,10 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
      * @async
      */
     const exportPDF = async () => {
-        try {
-            const garbageCollected: boolean = await writeOrgasToPio();
-            if (garbageCollected) {
-                const sendingOrganization = formInstances.sendingOrganizationForm[0].getFieldsValue().name;
-                await exportPioPDF(sendingOrganization).then(() => {
-                    setRunningExport(false);
-                    dispatch(navigationActions.exportPioRedux(undefined));
-                });
-            }
-        } catch (error) {
-            let errorMessage: string = exportErrorMessage;
-            if (error instanceof Error) errorMessage = error.message;
-            toastHandler.updateValidationError(toastId, errorMessage);
-            dispatch(navigationActions.exportPioRedux(undefined));
-            setRunningExport(false);
+        const garbageCollected: boolean = await writeOrgasToPio();
+        if (garbageCollected) {
+            const sendingOrganization = formInstances.sendingOrganizationForm[0].getFieldsValue().name;
+            await exportPioPDF(sendingOrganization);
         }
     };
 
@@ -312,6 +289,7 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
             } else if (type === "pdf") {
                 await exportPDF();
             }
+            dispatch(navigationActions.exportPioRedux(undefined));
         } else {
             setRunningExport(false);
         }
@@ -328,7 +306,19 @@ const TabView = (props: { validatorModalProps: IValidatorModalProps }): React.JS
             if (form) form[0].submit();
         });
         dispatch(navigationActions.exportPioRedux(type));
-        setTimeout(() => validatePio(type), 4000);
+        setTimeout(() => {
+            validatePio(type)
+                .then(() => {
+                    setRunningExport(false);
+                })
+                .catch((error) => {
+                    let errorMessage: string = exportErrorMessage;
+                    if (error instanceof Error) errorMessage = error.message;
+                    toastHandler.updateValidationError(toastId, errorMessage);
+                    dispatch(navigationActions.exportPioRedux(undefined));
+                    setRunningExport(false);
+                });
+        }, 4000);
     };
 
     useEffect((): void => {

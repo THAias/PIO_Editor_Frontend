@@ -6,6 +6,8 @@
         "react-redux",
         "redux-logger",
         "@types/redux-logger",
-        "eslint"
+        "eslint",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser"
     ]
 }

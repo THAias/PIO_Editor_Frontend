@@ -19,8 +19,15 @@ const ErrorPage = (props: { errorCode: string }): React.JSX.Element => {
                         extra={
                             <Button
                                 type="primary"
-                                onClick={async (): Promise<void> => {
-                                    dispatch(await navigationActions.changeScreenRedux("1"));
+                                onClick={() => {
+                                    navigationActions
+                                        .changeScreenRedux("1")
+                                        .then((result) => {
+                                            dispatch(result);
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error changing screen:", error);
+                                        });
                                 }}
                             >
                                 Zurück nach Hause
@@ -69,8 +76,15 @@ const ErrorPage = (props: { errorCode: string }): React.JSX.Element => {
                         extra={
                             <Button
                                 type="primary"
-                                onClick={async (): Promise<void> => {
-                                    dispatch(await navigationActions.changeScreenRedux("0"));
+                                onClick={() => {
+                                    navigationActions
+                                        .changeScreenRedux("0")
+                                        .then((result) => {
+                                            dispatch(result);
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error changing screen:", error);
+                                        });
                                 }}
                             >
                                 Anmelden

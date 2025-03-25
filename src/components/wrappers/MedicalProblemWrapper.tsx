@@ -30,9 +30,11 @@ const MedicalProblemWrapper = (props: ISingleWrapperProps): React.JSX.Element =>
     );
     const medicalProblemCodeOptions: SelectOptions = medicalProblemCodeValueSet.getOptionsSync;
     const medicalProblemSeverityValueSet: ValueSets = new ValueSets("http://hl7.org/fhir/ValueSet/condition-severity");
-    const medicalProblemSeverityOptions: SelectOptions = medicalProblemSeverityValueSet.getOptionsSync
+    const medicalProblemSeverityOptions: SelectOptions = (
+        medicalProblemSeverityValueSet.getOptionsSync as SelectOption[]
+    )
         .reverse()
-        .map((option: SelectOption) => {
+        .map((option: SelectOption): SelectOption => {
             if (option.label === "Mild") return { label: "Leicht", value: option.value } as SelectOption;
             else if (option.label === "Moderat") return { label: "Mittel", value: option.value } as SelectOption;
             else return option;

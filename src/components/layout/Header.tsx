@@ -183,13 +183,22 @@ const HeaderBar = (): React.JSX.Element => {
                         theme="dark"
                         items={menuItems}
                         disabledOverflow={true}
-                        onClick={async ({ key }: { key: string }): Promise<void> => {
-                            if (key !== "4") dispatch(await navigationActions.changeScreenRedux(key));
-                            else
+                        onClick={({ key }: { key: string }) => {
+                            if (key !== "4") {
+                                navigationActions
+                                    .changeScreenRedux(key)
+                                    .then((result) => {
+                                        dispatch(result);
+                                    })
+                                    .catch((error) => {
+                                        console.error("Error changing screen:", error);
+                                    });
+                            } else {
                                 setUserDataPopoverOpen((oldState: string) => {
-                                    if (oldState == "closed") return "open";
-                                    else return oldState;
+                                    if (oldState === "closed") return "open";
+                                    return oldState;
                                 });
+                            }
                         }}
                     />
                 </div>

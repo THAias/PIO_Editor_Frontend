@@ -47,7 +47,7 @@ const PractitionerWrapper = (props: ISingleWrapperProps): React.JSX.Element => {
     const specialityOptions: SelectOptions = specialityValueSet.getOptionsSync;
     const roleValueSet: ValueSets = new ValueSets("https://fhir.kbv.de/ValueSet/KBV_VS_Base_Rolecare");
     const roleOptions: SelectOptions = roleValueSet.getOptionsSync;
-    const [identificationNumbers, setIdentificationNumber] = useState<SelectOptions>([]);
+    const [identificationNumbers, setIdentificationNumbers] = useState<SelectOptions>([]);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const dispatch: AppDispatch = useDispatch();
     const possibleIdentificationNumbers: { [key: string]: SelectOption } = {
@@ -66,7 +66,7 @@ const PractitionerWrapper = (props: ISingleWrapperProps): React.JSX.Element => {
 
     //Initial hook for setting identification state
     useEffect((): void => {
-        const practitioner: IPractitionerObject = form.getFieldValue(fullPath);
+        const practitioner: IPractitionerObject | undefined = form.getFieldValue(fullPath);
         const tempIdentificationNumbers: SelectOptions = [];
         if (practitioner !== undefined) {
             if (practitioner.ZANR !== undefined) tempIdentificationNumbers.push(possibleIdentificationNumbers.ZANR);
@@ -75,7 +75,7 @@ const PractitionerWrapper = (props: ISingleWrapperProps): React.JSX.Element => {
 
             if (tempIdentificationNumbers.length === 0)
                 tempIdentificationNumbers.push(possibleIdentificationNumbers.ANR);
-            setIdentificationNumber(tempIdentificationNumbers);
+            setIdentificationNumbers(tempIdentificationNumbers);
         }
     }, []);
 
@@ -83,7 +83,7 @@ const PractitionerWrapper = (props: ISingleWrapperProps): React.JSX.Element => {
     const addIdentificationNumber = (value: string): void => {
         const newIdentificationNumber: SelectOption = possibleIdentificationNumbers[value.toString()];
         const newIdentificationNumbers: SelectOptions = [...identificationNumbers, newIdentificationNumber];
-        setIdentificationNumber(newIdentificationNumbers);
+        setIdentificationNumbers(newIdentificationNumbers);
     };
 
     //Helper for removing identification numbers
@@ -94,7 +94,7 @@ const PractitionerWrapper = (props: ISingleWrapperProps): React.JSX.Element => {
                 return identificationNumber.value !== label;
             }
         );
-        setIdentificationNumber(newIdentificationNumbers);
+        setIdentificationNumbers(newIdentificationNumbers);
         form.submit();
     };
 

@@ -81,7 +81,7 @@ const App = (): React.JSX.Element => {
         };
     }, [isLoggedIn]);
 
-    //For "webVersion": Close session (and further clean up) when page is refreshed or closed
+    //For "webVersion": Close session (and further clean up) when page is refreshed or closed.
     useEffect(() => {
         const handleUnload = (): void => {
             if (process.env.REACT_APP_VERSION_ENV === "webVersion") {

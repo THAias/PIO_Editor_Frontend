@@ -20,7 +20,7 @@ const InputTimePeriod = (props: ITimePeriodProps): React.JSX.Element => {
     const startWatcher = Form.useWatch(getFullPath(props).concat("start"), form);
     const endWatcher = Form.useWatch(getFullPath(props).concat("end"), form);
     const [startDateSet, setStartDateSet] = React.useState<boolean>(false);
-    const required: boolean = (props.rules && props.rules.some((rule: Rule) => (rule as RuleObject).required)) ?? false;
+    const required: boolean = props.rules?.some((rule: Rule) => (rule as RuleObject).required) ?? false;
 
     /**
      * Filter helper for limiting end date range based on start date.

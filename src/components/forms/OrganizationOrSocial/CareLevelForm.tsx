@@ -43,7 +43,7 @@ import RadioButton from "../../basic/RadioButton";
  * - KBV_PR_MIO_ULB_Observation_Care_Level.performer is not implemented
  * - KBV_PR_MIO_ULB_Observation_Care_Level.dataAbsentReason is not implemented
  * @param {IFormProps} props Props
- * @returns {React.JSX.Element} React element
+ * @returns {React.JSX.Element} React element.
  */
 const CareLevelForm = (props: IFormProps): React.JSX.Element => {
     //ValueSets
@@ -358,7 +358,11 @@ const CareLevelForm = (props: IFormProps): React.JSX.Element => {
                 name={"CareLevelForm"}
                 onFinish={onFinish}
                 form={form}
-                onValuesChange={() => form.validateFields()}
+                onValuesChange={() => {
+                    form.validateFields().catch((error) => {
+                        console.error("An error occurred validating the fields: ", error);
+                    });
+                }}
             >
                 <div className={"form-line"}>
                     <div className={"left"}>

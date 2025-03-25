@@ -1,0 +1,68 @@
+.disable-events {
+    pointer-events: none;
+}
+
+.pdf-override {
+    .ant-select {
+        height: unset !important;
+    }
+    * {
+        font-family: "Roboto PDF", sans-serif !important;
+        line-height: unset !important;
+        white-space: unset !important;
+        overflow: visible !important;
+    }
+    .base-input {
+        width: auto !important;
+    }
+    .frequency {
+        max-width: unset !important;
+    }
+    .patient-name {
+        padding: unset !important;
+    }
+    .signature {
+        min-height: 8cm;
+        border: solid 1px black;
+        color: darkgray;
+        font-size: large;
+        padding-left: 10px;
+    }
+    .tab-header-name {
+        font-size: xx-large;
+        padding-top: 1cm;
+    }
+    .ant-select-selector,
+    .ant-picker-outlined,
+    .ant-input-outlined {
+        border: none !important;
+        border-bottom: 1px solid darkgray !important;
+        border-radius: unset !important;
+    }
+    input {
+        color: unset !important;
+        background-color: unset !important;
+    }
+    .ant-tabs-tabpane {
+        display: unset !important;
+    }
+    .ant-input-group-addon {
+        visibility: hidden;
+    }
+    .ant-select-selector {
+        background: unset !important;
+    }
+    .ant-select-arrow {
+        display: none !important;
+    }
+    .ant-select-selection-item {
+        height: auto !important;
+        color: unset !important;
+    }
+    .ant-select-selection-item-remove {
+        visibility: hidden !important;
+    }
+    .ant-select-selection-placeholder {
+        display: none !important;
+    }
+}

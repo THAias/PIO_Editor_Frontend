@@ -55,12 +55,12 @@ const PractitionerForm = (props: IFormProps): React.JSX.Element => {
         // Create sets for faster lookups
         const practitionerSet: Set<string> = new Set(
             practitioners
-                .filter((pr: IPractitionerObject): boolean => pr.id !== undefined)
+                .filter((pr: IPractitionerObject): boolean => pr.id != undefined)
                 .map((pr: IPractitionerObject) => pr.id)
         );
         const reduxPractitionerSet: Set<string> = new Set(
             practitionerReduxState
-                ?.filter((pr: IPractitionerObject): boolean => pr.id !== undefined)
+                ?.filter((pr: IPractitionerObject): boolean => pr.id != undefined)
                 .map((pr: IPractitionerObject) => pr.id)
         );
 

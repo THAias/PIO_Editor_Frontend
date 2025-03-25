@@ -32,7 +32,7 @@ import {
     INursingMeasures,
     IOfficialMaiden,
 } from "../@types/FormTypes";
-import { checkCode, removeUndefined, writeCodingToSubTree } from "./HelperService";
+import { checkCode, getSupportedAndUnsupportedCodes, removeUndefined, writeCodingToSubTree } from "./HelperService";
 import PIOService from "./PIOService";
 import ValueSets from "./ValueSetService";
 
@@ -198,7 +198,7 @@ const setAddressValues = (
     addressSubTree: SubTree
 ): void => {
     const fieldKey: string = addressField[0];
-    const fieldValue: string = addressField[1];
+    let fieldValue: string = addressField[1];
     if (fieldValue) {
         if (Object.keys(lookUpTableNameUrls).includes(fieldKey)) {
             // extensions
@@ -220,8 +220,13 @@ const setAddressValues = (
             addressSubTree?.setValue(`${extObj.path}.valueString`, new StringPIO(extObj.extValue));
         } else if (fieldKey !== "postOfficeBoxRadio") {
             // normal values
-            if (addressField[0] === "postalCode" || addressField[0] === "city" || addressField[0] === "country")
+            if (addressField[0] === "postalCode" || addressField[0] === "city")
                 addressText[addressField[0]] = fieldValue;
+            if (addressField[0] === "country") {
+                const countryCode: string = getSupportedAndUnsupportedCodes(fieldValue, "code") as string;
+                addressText[addressField[0]] = countryCode;
+                fieldValue = countryCode;
+            }
             addressSubTree?.setValue(`${pathPrefix}.${addressField[0]}`, new StringPIO(fieldValue));
         }
     }
@@ -245,7 +250,7 @@ const getAddressStrings = (
         lineString =
             `${addressText.line?.street ?? ""} ${addressText.line?.houseNumber ?? ""}`.trim() +
             (addressText.line?.additionalLocator ? `, ${addressText.line.additionalLocator}` : "");
-    if (lineString[0] === "," && lineString[1] === " ") lineString = lineString.slice(2); // cut leading ", "
+    if (lineString.startsWith(",") && lineString[1] === " ") lineString = lineString.slice(2); // cut leading ", "
     const postalAndCityString: string = (
         (addressText.postalCode ? addressText.postalCode : "") + (addressText.city ? " " + addressText.city : "")
     ).trim();
@@ -495,7 +500,7 @@ export const onFinishMulti = <
  * @param {SubTree} subTree The subTree to save the value into
  */
 export const setValueIfExists = (path: string, value: PrimitiveDataTypes | undefined, subTree: SubTree): void => {
-    if (value !== undefined && value !== null) {
+    if (value != null) {
         subTree.setValue(path, value);
     }
 };
@@ -554,7 +559,7 @@ export const checkForNonEmptyValues = (
         | IAllergyObject[]
         | undefined
 ): boolean => {
-    if (obj === undefined || obj === null) {
+    if (obj == null) {
         return false;
     }
 

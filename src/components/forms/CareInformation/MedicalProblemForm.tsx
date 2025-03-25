@@ -112,7 +112,7 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
 
                     return {
                         id: medicalProblemId,
-                        medicalProblemCode: getCode || "",
+                        medicalProblemCode: getCode ?? "",
                         medicalProblemPerformer: getAsserterRef,
                         medicalProblemComment: getNoteText,
                         medicalProblemPeriod: {
@@ -151,11 +151,27 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
             medicalProblemVerificationStatus,
         }: IMedicalProblemObject = finding;
 
+        const oldDiagnosisCode: Coding = {
+            system: subTree.getSubTreeByPath("code.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("code.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("code.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("code.coding.display").getValueAsString() ?? "",
+        } as Coding;
+        const oldVerfificationStatusCode: Coding = {
+            system: subTree.getSubTreeByPath("verificationStatus.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("verificationStatus.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("verificationStatus.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("verificationStatus.coding.display").getValueAsString() ?? "",
+        } as Coding;
+
         subTree.deleteSubTreeByPath("");
 
+        //Write data (asserter & note)
         if (medicalProblemPerformer && validate(medicalProblemPerformer))
             setValueIfExists("asserter.reference", UuidPIO.parseFromString(medicalProblemPerformer), subTree);
         setValueIfExists("note.text", MarkdownPIO.parseFromString(medicalProblemComment), subTree);
+
+        //Time period
         if (medicalProblemPeriod) {
             const { start, end }: ITimePeriodObject = medicalProblemPeriod;
             setValueIfExists(
@@ -169,12 +185,18 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
                 subTree
             );
         }
-        if (medicalProblemCodeValueSet.getObjectByCodeSync(medicalProblemCode))
+
+        //Diagnose code
+        if (medicalProblemCode && medicalProblemCodeValueSet.getObjectByCodeSync(medicalProblemCode))
             writeCodingToSubTree(
                 subTree,
                 "code.coding",
                 medicalProblemCodeValueSet.getObjectByCodeSync(medicalProblemCode)
             );
+        else if (medicalProblemCode && !medicalProblemCodeValueSet.getObjectByCodeSync(medicalProblemCode))
+            writeCodingToSubTree(subTree, "code.coding", oldDiagnosisCode);
+
+        //Clinical status
         if (
             medicalProblemClinicalStatus &&
             medicalProblemClinicalStatusValueSet.getObjectByCodeSync(medicalProblemClinicalStatus)
@@ -184,6 +206,8 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
                 "clinicalStatus.coding",
                 medicalProblemClinicalStatusValueSet.getObjectByCodeSync(medicalProblemClinicalStatus)
             );
+
+        //Severity
         if (medicalProblemSeverity && medicalProblemSeverityValueSet.getObjectByCodeSync(medicalProblemSeverity)) {
             const severityCoding: Coding | undefined =
                 medicalProblemSeverityValueSet.getObjectByCodeSync(medicalProblemSeverity);
@@ -201,6 +225,8 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
             }
             writeCodingToSubTree(subTree, "severity.coding", severityCoding);
         }
+
+        //Verification status
         if (
             medicalProblemVerificationStatus &&
             medicalProblemVerificationStatusValueSet.getObjectByCodeSync(medicalProblemVerificationStatus)
@@ -210,6 +236,13 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
                 "verificationStatus.coding",
                 medicalProblemVerificationStatusValueSet.getObjectByCodeSync(medicalProblemVerificationStatus)
             );
+        else if (
+            medicalProblemVerificationStatus &&
+            !medicalProblemVerificationStatusValueSet.getObjectByCodeSync(medicalProblemVerificationStatus)
+        )
+            writeCodingToSubTree(subTree, "verificationStatus.coding", oldVerfificationStatusCode);
+
+        //Reference to patient
         subTree?.setValue("subject.reference", UuidPIO.parseFromString(patientUUID));
         return subTree;
     };
@@ -232,10 +265,10 @@ const MedicalProblemForm = (props: IFormProps): React.JSX.Element => {
     const getMedicalProblemLabel = (obj: IMedicalProblemObject): string => {
         try {
             const medicalProblemCodeLabel: string =
-                medicalProblemCodeOptions.find(
+                (medicalProblemCodeOptions.find(
                     (problem: SelectOption): boolean => problem.value === obj.medicalProblemCode
-                )?.label ||
-                obj.medicalProblemCode ||
+                )?.label ??
+                    obj.medicalProblemCode) ||
                 "Diagnose";
             const practitionerName: IFullNameObject | undefined = practitionerReduxState.find(
                 (practitioner: IPractitionerObject): boolean => practitioner.id === obj.medicalProblemPerformer

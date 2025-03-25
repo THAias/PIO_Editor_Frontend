@@ -1,5 +1,5 @@
 import { DateTimePIO, ICareProblemObject, IResponse, MarkdownPIO, SubTree, UuidPIO } from "@thaias/pio_editor_meta";
-import { SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
+import { Coding, SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
 import { Form } from "antd";
 import { Dayjs } from "dayjs";
 import React, { useEffect } from "react";
@@ -77,7 +77,7 @@ const CareProblemForm = (props: IFormProps): React.JSX.Element => {
                     const careProblemOnset: Dayjs | undefined = dateValue ? convertStringToDayJs(dateValue) : undefined;
                     return {
                         id: careProblemId,
-                        careProblemCode: careProblemCode || "",
+                        careProblemCode: careProblemCode ?? "",
                         careProblemComment: careProblemComment,
                         careProblemOnset: careProblemOnset,
                     };
@@ -98,10 +98,19 @@ const CareProblemForm = (props: IFormProps): React.JSX.Element => {
      */
     const updateSubTree = (subTree: SubTree, finding: ICareProblemObject): SubTree => {
         const { careProblemCode, careProblemComment, careProblemOnset }: ICareProblemObject = finding;
+        const oldCode: Coding = {
+            system: subTree.getSubTreeByPath("code.coding.system").getValueAsString() ?? "",
+            version: subTree.getSubTreeByPath("code.coding.version").getValueAsString() ?? "",
+            code: subTree.getSubTreeByPath("code.coding.code").getValueAsString() ?? "",
+            display: subTree.getSubTreeByPath("code.coding.display").getValueAsString() ?? "",
+        } as Coding;
         subTree.deleteSubTreeByPath("");
 
         if (careProblemCode && careProblemCodeValueSet.getObjectByCodeSync(careProblemCode))
             writeCodingToSubTree(subTree, "code.coding", careProblemCodeValueSet.getObjectByCodeSync(careProblemCode));
+        else if (careProblemCode && !careProblemCodeValueSet.getObjectByCodeSync(careProblemCode))
+            writeCodingToSubTree(subTree, "code.coding", oldCode);
+
         setValueIfExists("note.text", MarkdownPIO.parseFromString(careProblemComment), subTree);
         setValueIfExists(
             "onsetDateTime",

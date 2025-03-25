@@ -7,6 +7,7 @@ import {
     IOrganizationIdentifierObject,
     IOrganizationObject,
     IPractitionerObject,
+    IResponse,
     ITelecomObject,
     StringPIO,
     SubTree,
@@ -17,7 +18,14 @@ import {
 import { Coding, SelectOption, SelectOptions } from "@thaias/pio_fhir_resources";
 
 import { IExtension } from "../@types/ReduxTypes";
-import { checkCode, checkCoding, getCodingFromBackend, writeCodingToSubTree } from "./HelperService";
+import {
+    checkCode,
+    checkCoding,
+    getCodingFromBackend,
+    getSupportedAndUnsupportedCodes,
+    writeCodingToSubTree,
+} from "./HelperService";
+import PIOService from "./PIOService";
 import { extensionUrls, saveAddresses, setValueIfExists } from "./SubTreeHelperService";
 import UUIDService from "./UUIDService";
 import ValueSets from "./ValueSetService";
@@ -212,8 +220,8 @@ export const convertToContactPersonInterfaces = (subTrees: SubTree[]): IContactP
                 checkCoding(subTree, "relationship[0].coding", roleOptions),
             gender:
                 genderCode === "other"
-                    ? subTree.getSubTreeByPath("gender.extension.valueCoding.code").getValueAsString() ||
-                      subTree.getSubTreeByPath("gender.extension[0].valueCoding.code").getValueAsString()
+                    ? (subTree.getSubTreeByPath("gender.extension.valueCoding.code").getValueAsString() ??
+                      subTree.getSubTreeByPath("gender.extension[0].valueCoding.code").getValueAsString())
                     : checkCode(genderCode, genderOptions),
             name: convertToFullNameInterface(
                 subTree.children.filter((child: SubTree) => child.lastPathElement.includes("name"))
@@ -365,7 +373,7 @@ const convertToTelecomSubTrees = (telecomObject: ITelecomObject[], basePath: str
     //Generate telecom SubTrees
     let counter: number = 0;
     telecomObject.forEach((telecom: ITelecomObject) => {
-        if (telecom.value !== undefined && telecom.value !== "") {
+        if (telecom.value != undefined && telecom.value !== "") {
             const subTree: SubTree = new SubTree(basePath + ".telecom[" + counter + "]", undefined);
             subTree.setValue("system", new CodePIO(telecom.system));
             subTree.setValue("value", new StringPIO(telecom.value));
@@ -386,43 +394,62 @@ const convertToTelecomSubTrees = (telecomObject: ITelecomObject[], basePath: str
  */
 export const convertToContactPersonSubTrees = (contPersInter: IContactPersonObject[]): SubTree[] => {
     const array: SubTree[] = [];
-    contPersInter.forEach((contactPerson: IContactPersonObject): void => {
-        const subTree: SubTree = new SubTree(
-            contactPerson.id + ".KBV_PR_MIO_ULB_RelatedPerson_Contact_Person",
-            undefined
-        );
+    PIOService.getSubTrees(
+        contPersInter.map((contactPerson: IContactPersonObject) => {
+            return contactPerson.id + ".KBV_PR_MIO_ULB_RelatedPerson_Contact_Person.relationship.coding";
+        })
+    ).then((response: IResponse) => {
+        contPersInter.forEach((contactPerson: IContactPersonObject, index: number): void => {
+            const subTree: SubTree = new SubTree(
+                contactPerson.id + ".KBV_PR_MIO_ULB_RelatedPerson_Contact_Person",
+                undefined
+            );
 
-        // add patient to relatedPerson
-        subTree.setValue("patient.reference", UuidPIO.parseFromString(UUIDService.getUUID("KBV_PR_MIO_ULB_Patient")));
+            // add patient to relatedPerson
+            subTree.setValue(
+                "patient.reference",
+                UuidPIO.parseFromString(UUIDService.getUUID("KBV_PR_MIO_ULB_Patient"))
+            );
 
-        //Write 'role' to subTree
-        const roleValueSet: ValueSets = new ValueSets("http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype");
-        const coding: Coding | undefined = contactPerson.role
-            ? roleValueSet.getObjectByCodeSync(contactPerson.role)
-            : undefined;
-        if (coding) writeCodingToSubTree(subTree, "relationship.coding", coding);
+            //Write 'role' to subTree
+            const roleValueSet: ValueSets = new ValueSets(
+                "http://hl7.org/fhir/ValueSet/relatedperson-relationshiptype"
+            );
+            const coding: Coding | undefined = getSupportedAndUnsupportedCodes(
+                contactPerson.role,
+                "coding",
+                (response.data?.subTrees as unknown as SubTree[])[index.valueOf()],
+                roleValueSet
+            ) as Coding | undefined;
+            if (coding) writeCodingToSubTree(subTree, "relationship.coding", coding);
 
-        //Write 'gender' to subTree
-        if (contactPerson.gender && contactPerson.gender !== "X" && contactPerson.gender !== "D") {
-            subTree.setValue("gender", new CodePIO(contactPerson.gender));
-        } else if (contactPerson.gender && (contactPerson.gender === "X" || contactPerson.gender === "D")) {
-            subTree.setValue("gender", new CodePIO("other"));
-            subTree.setValue("gender.extension", new UriPIO(extensionUrls.genderExtension));
-            const genderOtherValueSet: ValueSets = new ValueSets("http://fhir.de/ValueSet/gender-other-de");
-            const genderOtherCoding: Coding | undefined = genderOtherValueSet.getObjectByCodeSync(contactPerson.gender);
-            writeCodingToSubTree(subTree, "gender.extension.valueCoding", genderOtherCoding);
-        }
+            //Write 'gender' to subTree
+            if (contactPerson.gender && contactPerson.gender !== "X" && contactPerson.gender !== "D") {
+                subTree.setValue(
+                    "gender",
+                    new CodePIO(getSupportedAndUnsupportedCodes(contactPerson.gender, "code") as string)
+                );
+            } else if (contactPerson.gender && (contactPerson.gender === "X" || contactPerson.gender === "D")) {
+                subTree.setValue("gender", new CodePIO("other"));
+                subTree.setValue("gender.extension", new UriPIO(extensionUrls.genderExtension));
+                const genderOtherValueSet: ValueSets = new ValueSets("http://fhir.de/ValueSet/gender-other-de");
+                const genderOtherCoding: Coding | undefined = genderOtherValueSet.getObjectByCodeSync(
+                    contactPerson.gender
+                );
+                writeCodingToSubTree(subTree, "gender.extension.valueCoding", genderOtherCoding);
+            }
 
-        //Write 'name', 'address' and 'telecom' to subTree
-        if (contactPerson.name)
-            subTree.children.push(...convertToFullNameSubTree(contactPerson.name, subTree.absolutePath));
-        if (contactPerson.address)
-            subTree.children.push(...convertToAddressSubTrees(contactPerson.address, subTree.absolutePath));
-        if (contactPerson.telecom)
-            subTree.children.push(...convertToTelecomSubTrees(contactPerson.telecom, subTree.absolutePath));
+            //Write 'name', 'address' and 'telecom' to subTree
+            if (contactPerson.name)
+                subTree.children.push(...convertToFullNameSubTree(contactPerson.name, subTree.absolutePath));
+            if (contactPerson.address)
+                subTree.children.push(...convertToAddressSubTrees(contactPerson.address, subTree.absolutePath));
+            if (contactPerson.telecom)
+                subTree.children.push(...convertToTelecomSubTrees(contactPerson.telecom, subTree.absolutePath));
 
-        //Add contact person subTree to array
-        array.push(subTree);
+            //Add contact person subTree to array
+            array.push(subTree);
+        });
     });
 
     return array;
@@ -807,6 +834,7 @@ export const convertToOrganizationSubTrees = (organizations: IOrganizationObject
         "https://fhir.kbv.de/ValueSet/KBV_VS_MIO_ULB_Type_Of_Facility"
     );
     const array: SubTree[] = [];
+
     organizations.forEach((organization: IOrganizationObject): void => {
         const subTree: SubTree = new SubTree(organization.id + ".KBV_PR_MIO_ULB_Organization", undefined);
 

@@ -71,9 +71,9 @@ const ValidatorModal = (props: { validatorModalProps: IValidatorModalProps }): R
      * @returns {string} Simple error text, which can be understood by the user
      */
     const getErrorText = (errMess: string | undefined): string => {
-        if (errMess && errMess.includes("Data at the root level is invalid. Line 1, position 1.")) {
+        if (errMess?.includes("Data at the root level is invalid. Line 1, position 1.")) {
             return "Die Datei enthält keine XML-Daten. Ein valides PIO muss eine XML-Datei sein. Bitte lade eine valide XML-Datei hoch.";
-        } else if (errMess && errMess.includes("Parsing of xml data failed. Parsed object is null")) {
+        } else if (errMess?.includes("Parsing of xml data failed. Parsed object is null")) {
             return "Die Struktur der hochgeladenen XML-Datei entspricht nicht der eines PIOs. Bitte lade eine valide XML-Datei hoch.";
         } else if (errMess && /start tag on line \d+ position \d+ does not match the end tag of/.test(errMess)) {
             try {
@@ -88,7 +88,7 @@ const ValidatorModal = (props: { validatorModalProps: IValidatorModalProps }): R
             }
         } else if (errMess && /Timeout after \d+ seconds! Validation service is not answering./.test(errMess)) {
             return "Während der Validierung ist ein Timeout aufgetreten. Das Validierungsergebnis der hochgeladenenen Datei kann nicht angezeigt werden.";
-        } else if (errMess && errMess.includes("Network Error")) {
+        } else if (errMess?.includes("Network Error")) {
             return "Der Validator Service ist nicht erreichbar. Das Validierungsergebnis der hochgeladenenen Datei kann nicht angezeigt werden.";
         } else {
             return "Es ist ein unbekannter Fehler aufgetreten. Versuchen sie es bitte erneut.";

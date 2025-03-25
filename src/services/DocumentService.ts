@@ -2,7 +2,7 @@ import { SubTree } from "@thaias/pio_editor_meta";
 import { IEPADocumentObject, IUploadDocumentObject } from "@thaias/pio_editor_meta/dist/types";
 
 /**
- * Converts a documentRefernece subTree to IEPADocumentObject or IUploadDocumentObject.
+ * Converts a documentReference subTree to IEPADocumentObject or IUploadDocumentObject.
  * @param {SubTree} subTree Current KBV_PR_MIO_ULB_DocumentReference_ePa_Reference subTree
  * @returns {{ type: string, object: IEPADocumentObject | IUploadDocumentObject }} Object and its type
  */

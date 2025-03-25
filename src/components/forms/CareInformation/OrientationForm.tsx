@@ -94,7 +94,7 @@ const OrientationForm = (props: IFormProps): React.JSX.Element => {
                 component.children.forEach((coding: SubTree): void => {
                     if (coding.lastPathElement === "valueCodeableConcept") {
                         const code: string = coding.getSubTreeByPath("coding.code").getValueAsString() ?? "";
-                        if (code === undefined) return;
+                        if (code == undefined) return;
                         Object.keys(optionCodeMap).forEach((key: string): void => {
                             const keyForValue: string | undefined = getKeyByValue(optionCodeMap[key.toString()], code);
                             if (keyForValue !== undefined) {

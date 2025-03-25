@@ -26,7 +26,7 @@ const TelecomWrapper = (props: ITelecomWrapperProps): React.JSX.Element => {
     //Helper function for adding new telecom fields to form
     const addNewTelecom = (chosen: string): void => {
         //Get old telecom data and prepare a new empty item
-        const prevTelecom: ITelecomObject[] = form.getFieldValue(fullPath);
+        const prevTelecom: ITelecomObject[] | undefined = form.getFieldValue(fullPath);
         const newTelecom: ITelecomObject = {
             system: chosen,
             label: telecomSystemOptions.find((option: SelectOption): boolean => option.value === chosen)?.label ?? "",

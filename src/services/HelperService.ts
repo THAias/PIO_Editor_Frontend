@@ -111,7 +111,7 @@ export const getAddressLabel = (addObj?: IAddressObject): string => {
     const postOfficeStr: string | undefined = addObj.postOfficeBoxNumber && `Postfach ${addObj.postOfficeBoxNumber}`;
     const addressStr: string = `${streetStr ?? ""}${streetStr && cityStr ? ", " : ""}${cityStr ?? ""}`;
     const postOfficeBoxStr: string = `${postOfficeStr ?? ""}${postOfficeStr && cityStr ? ", " : ""}${cityStr ?? ""}`;
-    const useStr: string | undefined = addObj.use && addObj.use.toUpperCase();
+    const useStr: string | undefined = addObj.use?.toUpperCase();
     return `${useStr ?? "OTHER"}: ${addObj.postOfficeBoxRadio === "true" ? postOfficeBoxStr : addressStr}`;
 };
 
@@ -121,7 +121,7 @@ export const getAddressLabel = (addObj?: IAddressObject): string => {
  * @returns {string} Full name as string
  */
 export const getNameLabel = (nameObject?: IFullNameObject): string => {
-    if (nameObject === undefined || !nameObject.familyName) return "";
+    if (!nameObject?.familyName) return "";
     const familyName: string = nameObject.familyName ? nameObject.familyName + "" : "";
     const givenName: string = nameObject.givenName ? ", " + nameObject.givenName + " " : "";
     const prefix: string = nameObject.prefix ? nameObject.prefix + " " : "";
@@ -245,6 +245,46 @@ export const checkMultipleCoding = (
         returnArray.push(checkCoding(subTree, subPath, dropDownOptions) ?? "");
     });
     return returnArray.filter((item: string): boolean => item !== "");
+};
+
+/**
+ * Will get code or coding from stated valueSet. If code is not included in valueSet (= unsupported code), the code from the subTree is used.
+ * @param valueSet {ValueSets} Value Set which should be include 'code'
+ * @param code {string} String representation of teh code
+ * @param codeType {"code" | "coding"} Code or coding element as return value
+ * @param subTreeToCoding {SubTree} The subTree which includes the coding element from backend in case the code is not supported
+ * @returns {Promise<string | Coding | undefined>} The right code or coding
+ */
+export const getSupportedAndUnsupportedCodes = (
+    code: string | undefined,
+    codeType: "code" | "coding",
+    subTreeToCoding?: SubTree,
+    valueSet?: ValueSets
+): string | Coding | undefined => {
+    if (!code) return undefined;
+    const pureCode: string = code.split("(nicht unterstützter")[0].trim();
+    switch (codeType) {
+        case "code":
+            return pureCode;
+        case "coding":
+            if (!valueSet || !subTreeToCoding) return undefined;
+            let coding: Coding | undefined = valueSet.getObjectByCodeSync(pureCode);
+            if (!coding) {
+                try {
+                    coding = {
+                        system: subTreeToCoding.getSubTreeByPath("system").getValueAsString(),
+                        version: subTreeToCoding.getSubTreeByPath("version").getValueAsString(),
+                        code: subTreeToCoding.getSubTreeByPath("code").getValueAsString(),
+                        display: subTreeToCoding.getSubTreeByPath("display").getValueAsString(),
+                    } as Coding;
+                } catch {
+                    return undefined;
+                }
+            }
+            return coding;
+        default:
+            return undefined;
+    }
 };
 
 /**

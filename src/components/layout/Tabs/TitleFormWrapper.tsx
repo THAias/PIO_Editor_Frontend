@@ -24,7 +24,7 @@ const TitleFormWrapper = (props: ITitleWrapperProps): JSX.Element => {
                         const CastedComponent = Component as React.FC<IFormProps>;
                         return (
                             <CastedComponent
-                                key={Component.displayName || Component.name || "defaultKey"}
+                                key={(Component.displayName ?? Component.name) || "defaultKey"}
                                 form={props.form[index.valueOf()][0]}
                                 {...props.props}
                             />
@@ -33,7 +33,7 @@ const TitleFormWrapper = (props: ITitleWrapperProps): JSX.Element => {
                         const CastedComponent = Component as React.FC<INonFormProps>;
                         return (
                             <CastedComponent
-                                key={Component.displayName || Component.name || "defaultKey"}
+                                key={(Component.displayName ?? Component.name) || "defaultKey"}
                                 {...props.props}
                             />
                         );

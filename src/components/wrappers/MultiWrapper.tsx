@@ -4,7 +4,7 @@ import { NamePath } from "antd/es/form/interface";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { IMultiWrapperProps, ISingleWrapperProps } from "../../@types/FormTypes";
+import { IMultiWrapperActiveKey, IMultiWrapperProps, ISingleWrapperProps } from "../../@types/FormTypes";
 import { RootState } from "../../@types/ReduxTypes";
 import "../../styles/basic/accordion.scss";
 import CustomModal from "../basic/CustomModal";
@@ -35,7 +35,7 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const practitioner: boolean = props.componentName === "practitioner";
     const exportState: string | undefined = useSelector((state: RootState) => state.navigationState.exportPio);
-    const [activeKey, setActiveKey] = useState<string | string[] | undefined>(undefined);
+    const [activeKey, setActiveKey] = useState<IMultiWrapperActiveKey>(undefined);
     const [removeBlocker, setRemoveBlocker] = useState<boolean>(false);
 
     //Unfold all collapse items while exporting a PIO. Necessary for validating all input fields
@@ -52,7 +52,7 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
         setActiveKey((prevState: string | string[] | undefined) => {
             if (!prevState) return [];
             else if (Array.isArray(prevState)) return prevState.map((key: string) => (Number(key) + 1).toString());
-            else return prevState + 1;
+            else return [(Number(prevState) + 1).toString()];
         });
     };
 
@@ -86,7 +86,6 @@ const MultiWrapper = <T extends object>(props: IMultiWrapperProps<T>): React.Rea
                                 <div
                                     className={"accordion-new-entry"}
                                     onClick={() => {
-                                        console.log(activeKey);
                                         setModalOpen(true);
                                     }}
                                     style={{ cursor: "pointer" }}

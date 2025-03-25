@@ -162,12 +162,10 @@ const OrganizationForm = (props: IFormProps): React.JSX.Element => {
                 PIOService.setReceivingInstitution(organization.id).then((): void =>
                     setCurrentOrgUUID(organization.id)
                 );
-        } else {
-            if (props.sending) {
-                setCurrentOrgUUID(undefined);
-                await PIOService.deleteAuthor(currentOrgUUID as string);
-            } else PIOService.clearReceivingInstitution().then((): void => setCurrentOrgUUID(undefined));
-        }
+        } else if (props.sending) {
+            setCurrentOrgUUID(undefined);
+            await PIOService.deleteAuthor(currentOrgUUID as string);
+        } else PIOService.clearReceivingInstitution().then((): void => setCurrentOrgUUID(undefined));
         PIOService.saveSubTrees([orgSubTree]).then((result: IResponse): void => {
             if (!result.success) console.error(result);
         });
@@ -178,7 +176,11 @@ const OrganizationForm = (props: IFormProps): React.JSX.Element => {
             <Form
                 layout={"vertical"}
                 form={form}
-                onFinish={onFinish}
+                onFinish={(values) => {
+                    onFinish(values).catch((error) => {
+                        console.error("An error occurred on form finish: ", error);
+                    });
+                }}
                 name={props.sending ? "SendingOrganizationForm" : "ReceivingOrganizationForm"}
             >
                 <div className={"form-line"}>

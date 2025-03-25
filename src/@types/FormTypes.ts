@@ -94,6 +94,8 @@ export interface IMultiWrapperProps<T> {
     deleteToolTipText?: string;
 }
 
+export type IMultiWrapperActiveKey = string | string[] | undefined;
+
 /**
  * Interface for the Family type object
  * @property {string} nachname? optional string that represents the family name

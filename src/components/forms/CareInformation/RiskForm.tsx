@@ -72,7 +72,7 @@ const RiskForm = (props: IFormProps): React.JSX.Element => {
 
                     return {
                         id: riskId,
-                        riskValue: riskValue || "",
+                        riskValue: riskValue ?? "",
                         riskPerformer: riskPerformer,
                         riskEffective: riskEffective ? convertStringToDayJs(riskEffective) : undefined,
                     };
@@ -121,7 +121,7 @@ const RiskForm = (props: IFormProps): React.JSX.Element => {
     };
 
     /**
-     * Stores data from input fields to SubTree state. Triggered by the onBlur event of the form.
+     * Stores data from input fields to SubTree state. Triggered by the onBlur event of the form
      * @param {IFormFinishObject} value Object which holds the input data. The key is the 'name' of the input field
      */
     const onFinish = (value: IFormFinishObject): void => {
@@ -131,7 +131,7 @@ const RiskForm = (props: IFormProps): React.JSX.Element => {
 
     const getRiskLabel = (obj: IRiskObject): string => {
         const riskDisplayValue: string | undefined =
-            riskOptions.find((risk: SelectOption): boolean => risk.value === obj.riskValue)?.label || obj.riskValue;
+            riskOptions.find((risk: SelectOption): boolean => risk.value === obj.riskValue)?.label ?? obj.riskValue;
         return riskDisplayValue ?? "Risiko";
     };
     return (

@@ -33,6 +33,7 @@ const TabMenu = (
         "loading" | "success" | "error" | "warning" | "notInitializedYet"
     >("notInitializedYet");
     const dispatch: AppDispatch = useDispatch();
+    const [exportPopUpOpen, setExportPopUpOpen] = useState<boolean>(false);
 
     //Will update the validationResult state
     useEffect((): void => {
@@ -129,6 +130,10 @@ const TabMenu = (
         }
     };
 
+    const handleOpenChange = (newOpen: boolean) => {
+        setExportPopUpOpen(newOpen);
+    };
+
     return (
         <div className={"tab-menu-wrapper"}>
             <div className={"tab-menu-wrapper"}>
@@ -137,6 +142,8 @@ const TabMenu = (
                     title="In welcher Form möchten Sie den Überleitungsbericht herunterladen?"
                     trigger="click"
                     placement="bottomRight"
+                    open={exportPopUpOpen}
+                    onOpenChange={handleOpenChange}
                     content={
                         <div className={`download-popover ${runningExport && "disable-events"}`}>
                             <div className={"download-popover-right-border"}>
@@ -152,7 +159,12 @@ const TabMenu = (
                                     id={"pio-export-button-xml"}
                                     type="primary"
                                     icon={<DownloadOutlined />}
-                                    onClick={() => exportPio("xml")}
+                                    onClick={() => {
+                                        setExportPopUpOpen(false);
+                                        exportPio("xml").catch((error) => {
+                                            console.error("An error occurred exporting a pio: ", error);
+                                        });
+                                    }}
                                 >
                                     XML
                                 </Button>
@@ -162,7 +174,12 @@ const TabMenu = (
                                     id={"pio-export-button-pdf"}
                                     type="primary"
                                     icon={<DownloadOutlined />}
-                                    onClick={() => exportPio("pdf")}
+                                    onClick={() => {
+                                        setExportPopUpOpen(false);
+                                        exportPio("pdf").catch((error) => {
+                                            console.error("An error occurred exporting a pio: ", error);
+                                        });
+                                    }}
                                 >
                                     PDF
                                 </Button>
@@ -181,7 +198,11 @@ const TabMenu = (
                 <Popconfirm
                     title="Löschen bestätigen"
                     description="Sollen wirklich alle Daten gelöscht werden?"
-                    onConfirm={deletePio}
+                    onConfirm={() => {
+                        deletePio().catch((error) => {
+                            console.error("An error occurred deleting a pio: ", error);
+                        });
+                    }}
                     placement="bottomRight"
                     icon={<ExclamationCircleOutlined style={{ color: "var(--color-red)" }} />}
                     okText="Ja"

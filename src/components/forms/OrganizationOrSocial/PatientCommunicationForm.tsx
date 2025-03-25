@@ -199,7 +199,7 @@ const PatientCommunicationForm = (props: IFormProps): React.JSX.Element => {
         let counter: number = 0;
         if (value.telecom) {
             (value.telecom as ITelecomObject[]).forEach((item: ITelecomObject): void => {
-                if (item.value === undefined || item.value === "") return;
+                if (item.value == undefined || item.value === "") return;
                 setValueIfExists(
                     "telecom[" + counter + "].system",
                     new CodePIO(item.system),
